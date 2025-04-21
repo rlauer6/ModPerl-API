@@ -1,0 +1,12 @@
+{
+    "Operation": {
+        "Id": "5gugmjupnj3o2a6bkabgrrewssvxc4k5-jp6gcz8w",
+        "Type": "CREATE_NAMESPACE",
+        "Status": "SUCCESS",
+        "CreateDate": "2025-04-15T16:29:25.184000-04:00",
+        "UpdateDate": "2025-04-15T16:30:01.263000-04:00",
+        "Targets": {
+            "NAMESPACE": "ns-2aozi62s24ytigjs"
+        }
+    }
+}

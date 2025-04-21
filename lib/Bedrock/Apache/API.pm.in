@@ -1,0 +1,499 @@
+package Bedrock::Apache::API;
+
+use strict;
+use warnings;
+
+use Apache2::Const -compile => qw(
+  OK
+  FORBIDDEN
+  DECLINED
+  HTTP_BAD_REQUEST
+  HTTP_UNAUTHORIZED
+  SERVER_ERROR
+  HTTP_INTERNAL_SERVER_ERROR
+);
+
+use DBI;
+use Data::Dumper;
+use English qw(-no_match_vars);
+use File::Path qw(make_path);
+use JSON;
+use Bedrock::Context;
+use Bedrock::Handler;
+use Module::Load qw(load);
+use URI::Escape;
+use Bedrock::Apache::APIArgs;
+use Bedrock::XML;
+use Bedrock::Apache::Bedrock;
+
+use bedrock_handler_common;
+
+use Readonly;
+
+Readonly::Scalar our $TRUE  => 1;
+Readonly::Scalar our $FALSE => 0;
+
+__PACKAGE__->follow_best_practice();
+
+__PACKAGE__->mk_accessors(
+  qw(
+    api
+    api_config
+    api_methods
+    autoconnect
+    base_url
+    bedrock_handler
+    config
+    context
+    cookieless_sessions
+    data
+    dbi
+    params
+    request
+    session
+    use_sessions
+  )
+);
+
+use parent qw(Class::Accessor::Fast);
+
+our $VERSION = '@PACKAGE_VERSION@';
+
+########################################################################
+sub new {
+########################################################################
+  my ( $class, @args ) = @_;
+
+  my $options = ref $args[0] ? $args[0] : {@args};
+
+  my $self = $class->SUPER::new($options);
+
+  my $retval = eval { $self->init_api; };
+
+  return $self->show_error($EVAL_ERROR)
+    if !$retval || $EVAL_ERROR;
+
+  if ( $self->can('init') ) {
+    $self->init;
+  }
+
+  return $self;
+}
+
+########################################################################
+sub show_error {
+########################################################################
+  my ( $self, $error ) = @_;
+
+  my $r = $self->get_request;
+
+  $r->log->error($error);
+
+  $r->content_type('text/html');
+
+  $r->status(Apache2::Const::HTTP_INTERNAL_SERVER_ERROR);
+
+  my $html = <<"END_OF_HTML";
+<html>
+  <head>
+    <title>SERVER ERROR</title>
+  </head>
+  <body>
+    <h1>Internal Server Error</h1>
+    <pre>
+    $error
+    </pre>
+  </body>
+</html>
+END_OF_HTML
+
+  $r->print($html);
+
+  return;
+}
+
+########################################################################
+sub init_api {
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  $r->log->debug( Dumper( [ headers => $r->headers_in ] ) );
+
+  $self->set_bedrock_handler( init_bedrock_handler($r) );
+
+  $self->set_config( $self->get_bedrock_handler->get_config );
+
+  my $api_name = $ENV{API_NAME};
+
+  if ($api_name) {
+    my $api_config = Bedrock::XML->new( sprintf '%s/%s.xml', $ENV{CONFIG_PATH}, $api_name );
+    $self->set_api_config($api_config);
+
+    foreach (qw(use_sessions autoconnect )) {
+      next if !exists $api_config->{$_};
+
+      my $setter = 'set_' . $_;
+      $self->$setter( $api_config->{$_} );
+    }
+
+    $r->log->error( Dumper( [ api_config => $api_config ] ) );
+  }
+
+  my $context = Bedrock::Context->new( CONFIG => $self->get_config, APACHE_HANDLER => $r );
+
+  $self->set_context($context);
+
+  $self->set_data( $self->get_json_request );
+
+  my $use_sessions = $self->get_use_sessions // $TRUE;
+
+  if ($use_sessions) {
+    $self->init_session( $self->get_cookieless_sessions );
+    $context->{SESSION} = $self->get_session;
+  }
+
+  if ( $self->get_autoconnect ) {
+    $self->connect_db;
+  }
+
+  $self->parse_uri;
+
+  my $args = Bedrock::Apache::APIArgs->new( $r->args );
+
+  $self->set_params($args);
+
+  return $self;
+}
+
+########################################################################
+sub dispatch_request {
+########################################################################
+  my ($self) = @_;
+
+  my $api = $self->get_api;
+
+  my $r = $self->get_request;
+
+  if ( !defined $api ) {
+    $r->log->error( 'no api in uri?' . $self->get_request->uri );
+    return Apache2::Const::HTTP_BAD_REQUEST;
+  }
+
+  my $api_methods = $self->get_api_methods;
+
+  if ( !exists $api_methods->{$api} ) {
+    $self->log->warn( sprintf 'no such endpoint (%s) - using default handler', $api );
+
+    $r->handler('default-handler');
+    $r->set_handlers( PerlResponseHandler => [] );
+
+    return Apache2::Const::DECLINED;
+  }
+  else {
+    my $method = $self->get_request->method;
+
+    if ( !grep { $_ eq $method } @{ $api_methods->{$api} } ) {
+      $self->log->error("HTTP method $method not allowed for $api");
+      return Apache2::Const::HTTP_BAD_REQUEST;
+    }
+  }
+
+  $api = "api_$api";
+
+  if ( !$self->can($api) ) {
+    $self->log->error->("$api not implemented!");
+    return Apache2::Const::SERVER_ERROR;
+  }
+
+  return $self->$api();
+}
+
+########################################################################
+sub parse_uri {
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $api = $self->get_api;
+
+  return $api
+    if $api;
+
+  my $api_base_url = $self->get_base_url // '/api';
+
+  $r->log->info(
+    Dumper(
+      [ uri      => $r->uri,
+        base_url => $self->get_base_url
+      ]
+    )
+  );
+
+  ($api) = $r->uri =~ m{^$api_base_url(?:/([^/]+))/?}xsm;
+
+  $api //= 'default';
+  $api =~ s/[-]/_/gxsm;
+
+  $r->log->info( 'api: ' . $api );
+
+  $self->set_api($api);
+
+  return $api;
+}
+
+########################################################################
+sub create_session_dir {
+########################################################################
+  my ($self) = @_;
+
+  return
+    if !$self->get_session;
+
+  my $session_id        = $self->get_session->{session};
+  my $session_base_path = $self->get_api_config->{SESSION_DIR};
+
+  die "no SESSION_DIR in configuration\n"
+    if !$session_base_path;
+
+  my $session_dir = sprintf '%s/%s', $session_base_path, $session_id;
+
+  if ( !-d $session_dir ) {
+    make_path($session_dir);
+  }
+
+  return $session_dir;
+}
+
+########################################################################
+sub get_cookie {
+########################################################################
+  my ( $self, $cookie_name ) = @_;
+
+  my $r = $self->get_request;
+
+  my $cookie_header = $r->headers_in->{Cookie} || q{};
+
+  $r->log->debug( Dumper( [ cookie_header => $cookie_header ] ) );
+  $r->log->debug( Dumper( [ headers       => $r->headers_in ] ) );
+
+  return
+    if !$cookie_header;
+
+  my %cookies = map { split /=/xsm, $_, 2; } split /;\s*/sxm, $cookie_header;
+
+  $r->log->debug( Dumper( [ cookies => \%cookies ] ) );
+
+  return $cookies{$cookie_name};
+}
+
+########################################################################
+sub init_session {
+########################################################################
+  my ( $self, $cookieless ) = @_;
+
+  my $r = $self->get_request;
+
+  my $session_config = $self->get_config->get_module_config('UserSession');
+  my $api_config     = $self->get_api_config;
+
+  $session_config->{data_source} = sprintf '%s:%s:%s', @{$api_config}{qw( DBI_DSN DBI_DB DBI_HOST)};
+  $session_config->{username}    = $api_config->{DBI_USER};
+  $session_config->{password}    = $api_config->{DBI_PASS};
+
+  $session_config->{cookieless_sessions} //= q{};
+
+  my $session = $self->bind_module( UserSession => $session_config );
+
+  $r->log->debug(
+    Dumper(
+      [ session        => $session,
+        session_config => $session_config
+      ]
+    )
+  );
+
+  $self->set_session($session);
+
+  my $session_id = $r->headers_in->{'X-SESSION-ID'};
+
+  ## -------------------------------------------------------------------
+  ## TBD: Needs testing!
+  ## -------------------------------------------------------------------
+  ##
+  ## At one point I did not kno if AJAX calls
+  ## would automatically send cookies if we returned them for login
+  ## sessions. Apparently, once we get a cookie from our login
+  ## endpoint it gets sent automatically on subsequent AJAX calls. IOW
+  ## there is no need to send the session id in a header, it gets sent
+  ## from the cookie. Where this might be used is in a client that
+  ## does not store and resend cookies.
+  ##
+  ## The call below will inject the session identifier but not kill
+  ## the cookie.
+  ## -------------------------------------------------------------------
+  if ($session_id) {
+    $session->cookieless_sessions( $session_id, 'do-not-kill-cookie' );
+  }
+  ## -------------------------------------------------------------------
+
+  return $session;
+}
+
+########################################################################
+sub bind_module {
+########################################################################
+  my ( $self, $module, $config ) = @_;
+
+  my $ctx = $self->get_context;
+
+  $config //= $self->get_config->get_module_config($module);
+
+  die "no configuration found for $module\n"
+    if !$config;
+
+  $self->get_request->log->debug( Dumper( [ config => $config ] ) );
+
+  my $class = 'BLM::Startup::' . $module;
+
+  load $class;
+
+  my $blm = bless {}, $class;
+
+  tie %{$blm}, $class, $ctx, $config // {};
+
+  return $blm;
+}
+
+########################################################################
+sub connect_db {
+########################################################################
+  my ($self) = @_;
+
+  my $dbi = $self->get_dbi;
+
+  return $dbi
+    if $dbi;
+
+  my $config = $self->get_api_config;
+
+  my ( $database, $host, $user, $pass, $dsn ) = @{$config}{qw(DBI_DB DBI_HOST DBI_USER DBI_PASS DBI_DSN)};
+
+  my $connect_str = sprintf '%s:%s:%s', $dsn, $database, $host;
+
+  $dbi = DBI->connect(
+    $connect_str,
+    $user, $pass,
+    { AutoCommit => $FALSE,
+      RaiseError => $TRUE,
+      PrintError => $TRUE,
+    }
+  );
+
+  $self->set_dbi($dbi);
+
+  return $dbi;
+}
+
+########################################################################
+sub get_session_dir {
+########################################################################
+  my ($self) = @_;
+
+  my $session_id = $self->get_session->{session};
+
+  my $session_dir = sprintf '%s/%s', $self->get_config->{SESSION_DIR}, $session_id;
+
+  if ( !-d $session_dir ) {
+    make_path($session_dir);
+  }
+
+  return $session_dir;
+}
+
+########################################################################
+sub get_json_request {
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $content_length = $r->headers_in->{'Content-Length'};
+
+  return {}
+    if !$content_length;
+
+  my $payload;
+
+  $r->read( $payload, $content_length );
+
+  my $request = eval { return JSON->new->decode($payload); };
+
+  if ( !$request || $EVAL_ERROR ) {
+    $r->log_error( 'unable to read JSON payload ' . $EVAL_ERROR );
+  }
+
+  return $request;
+}
+
+########################################################################
+sub send_json_response {
+########################################################################
+  my ( $self, $response, $status ) = @_;
+
+  my $r = $self->get_request;
+
+  $r->content_type('application/json');
+
+  my $response_payload = eval { return JSON->new->pretty->encode($response); };
+
+  if ( !$response_payload || $EVAL_ERROR ) {
+    $r->log->error( 'unable to serialize payload ' . $EVAL_ERROR );
+
+    $response_payload = JSON->new->pretty->encode( { error => $EVAL_ERROR } );
+
+    $status = Apache2::Const::SERVER_ERROR;
+  }
+
+  $r->print($response_payload);
+
+  return $status ? $status : Apache2::Const::OK;
+}
+
+########################################################################
+sub log {
+########################################################################
+  my ($self) = @_;
+
+  return $self->get_request->log;
+}
+
+########################################################################
+sub get_ip {
+########################################################################
+  my ($self) = @_;
+
+  my ($ip) = split /\s*,\s*/xsm, ( $self->get_request->headers_in->{'X-FORWARDED-FOR'} // q{} );
+
+  return $ip;
+}
+
+########################################################################
+sub DESTROY {
+########################################################################
+  my ($self) = @_;
+
+  if ( $self->get_dbi && $self->get_dbi->ping ) {
+    $self->get_dbi->disconnect;
+  }
+
+  if ( $self->get_session ) {
+    $self->get_session->closeBLM;
+  }
+
+  return;
+}
+
+1;

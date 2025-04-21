@@ -1,0 +1,30 @@
+project:
+  description: Bedrock::Apache::API
+  author:
+    name: Rob Lauer
+    mailto: rclauer@gmail.com
+pm_module: Bedrock::Apache::API
+min-perl-version: 5.010
+dependencies:
+  requires: requires
+  test_requires: test-requires
+path:
+  pm_module: lib
+  tests: t
+extra-files:
+  - ChangeLog
+  - share:
+      - config/api.conf
+      - config/apache2.conf
+      - config/api-vhost.conf
+      - config/api.xml
+      - config/mysql-session.xml
+resources:
+  homepage: http://github.com/rlauer6/blog-api
+  bugtracker:
+    web: http://github.com/rlauer6/blog-api
+    mailto: rclauer@gmail.com
+  repository:
+    url: git://github.com/rlauer6/blog-api.git
+    web: http://github.com/rlauer6/blog-api
+    type: 'git'

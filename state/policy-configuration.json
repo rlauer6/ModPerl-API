@@ -1,0 +1,9 @@
+{
+    "TargetValue": 100.0,
+    "PredefinedMetricSpecification": {
+	"PredefinedMetricType": "ALBRequestCountPerTarget",
+	"ResourceLabel": "app/internal/8019af4728d3fab3/targetgroup/example-api-tg/5e7ca95f3ec9918b"
+    },
+    "ScaleInCooldown": 60,
+    "ScaleOutCooldown": 60
+}

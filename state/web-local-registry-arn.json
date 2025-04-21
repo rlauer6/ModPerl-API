@@ -1,0 +1,19 @@
+{
+  "Id": "srv-x6xj22dqgucakbsv",
+  "Arn": "arn:aws:servicediscovery:us-east-1:311974035819:service/srv-x6xj22dqgucakbsv",
+  "Name": "example-api",
+  "Type": "DNS_HTTP",
+  "DnsConfig": {
+    "RoutingPolicy": "MULTIVALUE",
+    "DnsRecords": [
+      {
+        "Type": "A",
+        "TTL": 60
+      }
+    ]
+  },
+  "HealthCheckCustomConfig": {
+    "FailureThreshold": 1
+  },
+  "CreateDate": "2025-04-15T16:57:44.833000-04:00"
+}

@@ -1,0 +1,76 @@
+{
+    "family": "example-api",
+    "containerDefinitions": [
+        {
+            "name": "example-api",
+            "image": "311974035819.dkr.ecr.us-east-1.amazonaws.com/example-api@sha256:78d3222db850153c6a13245b70109f9157b3a44c381d9664b2fa398d53fecfd2",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "example-api-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "secrets": [
+                {
+                    "name": "MYSQL_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:311974035819:secret:mysql-password-WdsaJF"
+                },
+                {
+                    "name": "API_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:311974035819:secret:api-key-JFbDop"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "MYSQL_HOST",
+                    "value": "mysql.local"
+                },
+                {
+                    "name": "API_NO_AUTHENTICATION",
+                    "value": "0"
+                },
+                {
+                    "name": "API_NAME",
+                    "value": "example-api"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/example-api",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::311974035819:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::311974035819:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "enableFaultInjection": false
+}

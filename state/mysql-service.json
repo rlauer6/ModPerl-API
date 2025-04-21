@@ -1,0 +1,189 @@
+{
+  "serviceArn": "arn:aws:ecs:us-east-1:311974035819:service/fargate-cluster/mysql8",
+  "serviceName": "mysql8",
+  "clusterArn": "arn:aws:ecs:us-east-1:311974035819:cluster/fargate-cluster",
+  "loadBalancers": [],
+  "serviceRegistries": [
+    {
+      "registryArn": "arn:aws:servicediscovery:us-east-1:311974035819:service/srv-bmwsit4dbpmcc2g3",
+      "containerName": "mysql"
+    }
+  ],
+  "status": "ACTIVE",
+  "desiredCount": 1,
+  "runningCount": 1,
+  "pendingCount": 0,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "platformFamily": "Linux",
+  "taskDefinition": "arn:aws:ecs:us-east-1:311974035819:task-definition/mysql8:3",
+  "deploymentConfiguration": {
+    "deploymentCircuitBreaker": {
+      "enable": false,
+      "rollback": false
+    },
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100
+  },
+  "deployments": [
+    {
+      "id": "ecs-svc/5568909997817731941",
+      "status": "PRIMARY",
+      "taskDefinition": "arn:aws:ecs:us-east-1:311974035819:task-definition/mysql8:3",
+      "desiredCount": 1,
+      "pendingCount": 0,
+      "runningCount": 1,
+      "failedTasks": 0,
+      "createdAt": "2025-04-16T16:34:31.317000-04:00",
+      "updatedAt": "2025-04-16T16:35:41.090000-04:00",
+      "launchType": "FARGATE",
+      "platformVersion": "1.4.0",
+      "platformFamily": "Linux",
+      "networkConfiguration": {
+        "awsvpcConfiguration": {
+          "subnets": [
+            "subnet-08b5e355"
+          ],
+          "securityGroups": [
+            "sg-158b8462"
+          ],
+          "assignPublicIp": "DISABLED"
+        }
+      },
+      "rolloutState": "COMPLETED",
+      "rolloutStateReason": "ECS deployment ecs-svc/5568909997817731941 completed."
+    }
+  ],
+  "roleArn": "arn:aws:iam::311974035819:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+  "events": [
+    {
+      "id": "bd0d8d95-b167-4e79-b853-6f87d3bd3913",
+      "createdAt": "2025-04-21T04:39:26.386000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "0eb21145-7b3b-45a7-aa80-0af63d222ccb",
+      "createdAt": "2025-04-20T22:39:10.995000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "da8824a6-0244-4e0b-9e70-69cdd1960d2d",
+      "createdAt": "2025-04-20T16:39:07.861000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "b866b8c7-013b-422c-b8e7-57dbbab0098f",
+      "createdAt": "2025-04-20T10:39:02.253000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "45f1a5de-2e0e-45c2-ae8b-634856bbbd2f",
+      "createdAt": "2025-04-20T04:39:01.709000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "adfe284c-60c6-4146-98aa-e9079487ce3c",
+      "createdAt": "2025-04-19T22:38:55.869000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "090e6d24-da60-4f10-a731-4709a57b3bc5",
+      "createdAt": "2025-04-19T16:38:27.144000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "ace3d5a3-46c5-4ce4-8ef7-192fd1eb7dd1",
+      "createdAt": "2025-04-19T10:38:24.081000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "d1ecffec-59ad-4ce5-b0dd-ede0296008d4",
+      "createdAt": "2025-04-19T04:38:06.697000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "ddb6fc86-aa6e-452e-8c0e-45903902293b",
+      "createdAt": "2025-04-18T22:37:39.296000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "a4fb7788-9854-4555-b013-d18e4251f9c6",
+      "createdAt": "2025-04-18T16:37:18.093000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "cae2cfd6-70ce-4c0a-8c71-09fafb785154",
+      "createdAt": "2025-04-18T10:37:14.355000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "877d9654-d49d-4d1d-b2af-40dd4589eb6e",
+      "createdAt": "2025-04-18T04:37:10.238000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "490e27aa-1578-4140-894f-50cc6674c907",
+      "createdAt": "2025-04-17T22:36:43.244000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "30cb9a2e-3682-4e57-965c-d6b663be86ed",
+      "createdAt": "2025-04-17T16:36:31.901000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "b82ac4f9-704b-486a-96bf-1d6a043641ee",
+      "createdAt": "2025-04-17T10:36:06.559000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "81e58f2e-e577-4d1d-ab2a-e155f3b37dd8",
+      "createdAt": "2025-04-17T04:36:01.644000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "2ddad5d9-36ce-44e4-b577-02a2ce123ce4",
+      "createdAt": "2025-04-16T22:35:58.161000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "6a6ae390-40d8-46d9-a521-7e67d7abca1f",
+      "createdAt": "2025-04-16T16:35:41.096000-04:00",
+      "message": "(service mysql8) has reached a steady state."
+    },
+    {
+      "id": "56500cef-ccfd-4b60-937a-a40d535714a3",
+      "createdAt": "2025-04-16T16:35:41.095000-04:00",
+      "message": "(service mysql8) (deployment ecs-svc/5568909997817731941) deployment completed."
+    },
+    {
+      "id": "b7462bf0-4c16-4e18-801d-047ab083e800",
+      "createdAt": "2025-04-16T16:34:51.037000-04:00",
+      "message": "(service mysql8) has started 1 tasks: (task 01c80164130042439f738c6204c38dcd)."
+    }
+  ],
+  "createdAt": "2025-04-16T16:34:31.317000-04:00",
+  "placementConstraints": [],
+  "placementStrategy": [],
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-08b5e355"
+      ],
+      "securityGroups": [
+        "sg-158b8462"
+      ],
+      "assignPublicIp": "DISABLED"
+    }
+  },
+  "healthCheckGracePeriodSeconds": 60,
+  "schedulingStrategy": "REPLICA",
+  "deploymentController": {
+    "type": "ECS"
+  },
+  "createdBy": "arn:aws:iam::311974035819:user/sandbox-developer",
+  "enableECSManagedTags": false,
+  "propagateTags": "NONE",
+  "enableExecuteCommand": false,
+  "availabilityZoneRebalancing": "DISABLED"
+}

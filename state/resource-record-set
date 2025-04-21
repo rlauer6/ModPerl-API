@@ -1,0 +1,15 @@
+{
+  "Comment": "Point sandbox-api.treasurersbriefcase.com to internal ALB via CNAME",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "sandbox-api.treasurersbriefcase.com.",
+      "Type": "CNAME",
+      "TTL": 60,
+      "ResourceRecords": [
+        { "Value": "internal-internal-2065045116.us-east-1.elb.amazonaws.com" }
+      ]
+    }
+  }]
+}
+

@@ -1,0 +1,39 @@
+{
+    "family": "mysql8",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "ephemeralStorage": {
+        "sizeInGiB": 30
+    },
+    "executionRoleArn": "arn:aws:iam::311974035819:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::311974035819:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "mysql",
+            "image": "mysql:8.0",
+            "essential": true,
+            "secrets": [
+                {
+                    "name": "MYSQL_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:311974035819:secret:mysql-password-WdsaJF"
+                }
+            ],
+            "portMappings": [
+                {
+                    "containerPort": 3306,
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/example-api",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "mysql"
+                }
+            }
+        }
+    ]
+}

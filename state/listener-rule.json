@@ -1,0 +1,14 @@
+[
+    {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+        "Values": ["@api_host@"]
+      }
+    },
+    {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+        "Values": ["@base_url@/*"]
+      }
+    }
+]

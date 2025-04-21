@@ -1,0 +1,30 @@
+{
+    "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:loadbalancer/app/internal/8019af4728d3fab3",
+    "DNSName": "internal-internal-2065045116.us-east-1.elb.amazonaws.com",
+    "CanonicalHostedZoneId": "Z35SXDOTRQ7X7K",
+    "CreatedTime": "2019-06-24T13:18:06.130000+00:00",
+    "LoadBalancerName": "internal",
+    "Scheme": "internal",
+    "VpcId": "vpc-9526f0ee",
+    "State": {
+        "Code": "active"
+    },
+    "Type": "application",
+    "AvailabilityZones": [
+        {
+            "ZoneName": "us-east-1a",
+            "SubnetId": "subnet-08b5e355",
+            "LoadBalancerAddresses": []
+        },
+        {
+            "ZoneName": "us-east-1b",
+            "SubnetId": "subnet-7b675d1f",
+            "LoadBalancerAddresses": []
+        }
+    ],
+    "SecurityGroups": [
+        "sg-ff9c9388"
+    ],
+    "IpAddressType": "ipv4",
+    "EnablePrefixForIpv6SourceNat": "off"
+}

@@ -1,0 +1,26 @@
+CREATE DATABASE IF NOT EXISTS @mysql_database@;
+
+DROP user IF EXISTS @mysql_user@;
+
+CREATE USER '@mysql_user@'@'%' IDENTIFIED BY '@mysql_password@';
+
+GRANT ALL PRIVILEGES ON *.* TO '@mysql_user@'@'%';
+
+USE @mysql_database@;
+
+CREATE TABLE IF NOT EXISTS session 
+ (
+  id           int(11)      not null auto_increment primary key,
+  session      varchar(50)  default null,
+  login_cookie varchar(50)  not null default '',
+  username     varchar(50)  not null default '',
+  password     varchar(64)  default null,
+  firstname    varchar(30)  default null,
+  lastname     varchar(50)  default null,
+  email        varchar(100) default null,
+  prefs        text,
+  updated      timestamp    not null default current_timestamp on update current_timestamp,
+  added        datetime     default null,
+  expires      datetime     default null
+);
+

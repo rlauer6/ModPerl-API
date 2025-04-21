@@ -1,0 +1,619 @@
+{
+    "service": {
+        "serviceArn": "arn:aws:ecs:us-east-1:311974035819:service/fargate-cluster/example-api",
+        "serviceName": "example-api",
+        "clusterArn": "arn:aws:ecs:us-east-1:311974035819:cluster/fargate-cluster",
+        "loadBalancers": [
+            {
+                "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b",
+                "containerName": "example-api",
+                "containerPort": 80
+            }
+        ],
+        "serviceRegistries": [
+            {
+                "registryArn": "arn:aws:servicediscovery:us-east-1:311974035819:service/srv-x6xj22dqgucakbsv",
+                "containerName": "example-api"
+            }
+        ],
+        "status": "ACTIVE",
+        "desiredCount": 1,
+        "runningCount": 1,
+        "pendingCount": 0,
+        "launchType": "FARGATE",
+        "platformVersion": "LATEST",
+        "platformFamily": "Linux",
+        "taskDefinition": "arn:aws:ecs:us-east-1:311974035819:task-definition/example-api:4",
+        "deploymentConfiguration": {
+            "deploymentCircuitBreaker": {
+                "enable": false,
+                "rollback": false
+            },
+            "maximumPercent": 200,
+            "minimumHealthyPercent": 100
+        },
+        "deployments": [
+            {
+                "id": "ecs-svc/9256225151466406267",
+                "status": "PRIMARY",
+                "taskDefinition": "arn:aws:ecs:us-east-1:311974035819:task-definition/example-api:4",
+                "desiredCount": 0,
+                "pendingCount": 0,
+                "runningCount": 0,
+                "failedTasks": 0,
+                "createdAt": "2025-04-21T05:32:26.812000-04:00",
+                "updatedAt": "2025-04-21T05:32:26.812000-04:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-08b5e355"
+                        ],
+                        "securityGroups": [
+                            "sg-ff9c9388"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "IN_PROGRESS",
+                "rolloutStateReason": "ECS deployment ecs-svc/9256225151466406267 in progress."
+            },
+            {
+                "id": "ecs-svc/5617586582505109160",
+                "status": "ACTIVE",
+                "taskDefinition": "arn:aws:ecs:us-east-1:311974035819:task-definition/example-api:36",
+                "desiredCount": 1,
+                "pendingCount": 0,
+                "runningCount": 1,
+                "failedTasks": 0,
+                "createdAt": "2025-04-21T05:27:20.817000-04:00",
+                "updatedAt": "2025-04-21T05:30:25.923000-04:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-08b5e355"
+                        ],
+                        "securityGroups": [
+                            "sg-ff9c9388"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "COMPLETED",
+                "rolloutStateReason": "ECS deployment ecs-svc/5617586582505109160 completed."
+            }
+        ],
+        "roleArn": "arn:aws:iam::311974035819:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+        "events": [
+            {
+                "id": "77491bd6-7521-43b2-bb59-93317bbc7b2c",
+                "createdAt": "2025-04-21T05:30:25.930000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "d2ab0cff-a4af-46d7-9615-e9e484b839d0",
+                "createdAt": "2025-04-21T05:30:25.929000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/5617586582505109160) deployment completed."
+            },
+            {
+                "id": "1529de4c-2cc1-4778-a273-97e0da260854",
+                "createdAt": "2025-04-21T05:29:34.463000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/6888565602914758166) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "fc2cb5e6-a426-46dc-88f2-fdc084e27369",
+                "createdAt": "2025-04-21T05:29:34.459000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "46f77359-e269-4092-9289-d333aed876db",
+                "createdAt": "2025-04-21T05:29:24.521000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task e5ee78c14c4541a6a5d78fa624c6163e)."
+            },
+            {
+                "id": "e376f422-f3fb-4523-8f09-46649f690ee9",
+                "createdAt": "2025-04-21T05:28:24.469000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "dabc9fd8-42cb-4353-b99b-242b707d0284",
+                "createdAt": "2025-04-21T05:27:33.562000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 2460004e86f84fe3aeb10fdecead6a00)."
+            },
+            {
+                "id": "9ccc799f-6bf2-4a16-be2d-bfbf63eb54a4",
+                "createdAt": "2025-04-21T05:13:50.009000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "0b4a8597-67bb-4a86-892f-78b6d97e1b17",
+                "createdAt": "2025-04-21T05:13:50.008000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/6888565602914758166) deployment completed."
+            },
+            {
+                "id": "79220604-6179-4b92-8dc9-163a7f9dd9f9",
+                "createdAt": "2025-04-21T05:12:48.464000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/7445436278476846532) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "cfd61c33-cea0-4a4c-b230-32c8113f93d7",
+                "createdAt": "2025-04-21T05:12:48.460000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "d7e05106-2bba-451f-9d16-d6bc8ad9c943",
+                "createdAt": "2025-04-21T05:12:38.879000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 4f5e9cd2b4494417ae68995a0cd084e2)."
+            },
+            {
+                "id": "6ac359f0-4958-45d5-b853-dcf716774183",
+                "createdAt": "2025-04-21T05:11:36.942000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "510546b5-0de8-4704-b454-c2f583afcf0b",
+                "createdAt": "2025-04-21T05:10:47.709000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task e5ee78c14c4541a6a5d78fa624c6163e)."
+            },
+            {
+                "id": "9d4acd47-1898-4203-81a6-569094727489",
+                "createdAt": "2025-04-20T23:58:36.256000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "deace418-12df-4df5-aaa6-8b926fc92c1b",
+                "createdAt": "2025-04-20T17:58:02.127000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "5f10a983-fc0e-40a4-84c1-ec02b82dea83",
+                "createdAt": "2025-04-20T11:57:17.989000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "a130ad21-aa1c-4c7d-a0c3-fc27a22ee009",
+                "createdAt": "2025-04-20T05:56:32.135000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "d45c867f-0850-4c5f-9265-42d792330185",
+                "createdAt": "2025-04-19T23:55:57.494000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "94d0df6f-cb5b-4d14-a7f5-bced50fe1a1f",
+                "createdAt": "2025-04-19T17:55:51.804000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "cf598220-d2a5-4d1f-86e2-e79b2a375dbe",
+                "createdAt": "2025-04-19T11:55:32.475000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "3a6fe6fc-a685-495b-a382-10da82c4eab7",
+                "createdAt": "2025-04-19T05:55:15.312000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "07bb909f-fd45-4349-96db-789a57ad366e",
+                "createdAt": "2025-04-18T23:55:12.288000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "9f76a971-9df1-44ea-9b61-3b616d5d019b",
+                "createdAt": "2025-04-18T17:55:03.478000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "c07b4967-f06f-40b2-9864-1111d157763d",
+                "createdAt": "2025-04-18T17:55:03.392000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/7445436278476846532) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "51af7148-e7f9-4de8-972d-30b77c314d74",
+                "createdAt": "2025-04-18T17:55:03.387000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "ee1b6f0b-79b0-4251-8016-eed8a105f00e",
+                "createdAt": "2025-04-18T17:54:53.785000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 5de62b9d15334b479fd50af40f4abab2)."
+            },
+            {
+                "id": "498e147c-63be-4f92-8e77-3a455e499303",
+                "createdAt": "2025-04-18T17:38:13.196000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "0efb6588-d337-42ca-92dd-4bf1a3a8819b",
+                "createdAt": "2025-04-18T17:37:45.085000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "1958894c-7a88-44e1-810d-d07ec66d6a8c",
+                "createdAt": "2025-04-18T17:36:55.981000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 4f5e9cd2b4494417ae68995a0cd084e2)."
+            },
+            {
+                "id": "0281546d-513c-4620-a6b8-9b0096447f66",
+                "createdAt": "2025-04-18T17:34:34.515000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "63bdc94b-242c-4202-95da-89dc3665ba0d",
+                "createdAt": "2025-04-18T17:34:34.514000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/7445436278476846532) deployment completed."
+            },
+            {
+                "id": "25f349a3-5807-4660-8c8a-74ba7e71a70e",
+                "createdAt": "2025-04-18T17:33:43.639000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/7854768019872758181) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "c15285e3-8b8d-4b8b-8903-f5ed5ac130ac",
+                "createdAt": "2025-04-18T17:33:43.634000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "3c4d3a6c-df09-4fe8-9df5-414286ebec55",
+                "createdAt": "2025-04-18T17:33:32.567000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task eaad1228abe14a98b493c56f64e061fc)."
+            },
+            {
+                "id": "2d137e6e-f99e-4d19-b111-a4f997ea3f00",
+                "createdAt": "2025-04-18T17:32:21.934000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "cec1b364-dfa2-4f34-a8f2-27b84c4cb299",
+                "createdAt": "2025-04-18T17:31:32.326000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 5de62b9d15334b479fd50af40f4abab2)."
+            },
+            {
+                "id": "64e2268c-65c5-4b17-a441-55c92edae8da",
+                "createdAt": "2025-04-18T16:42:44.866000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "464545f5-6d00-4dca-bcc8-dc3bcb591596",
+                "createdAt": "2025-04-18T16:42:44.865000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/7854768019872758181) deployment completed."
+            },
+            {
+                "id": "3234fa45-d289-47b7-96dd-7823717e0372",
+                "createdAt": "2025-04-18T16:41:43.344000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/2138836476991326308) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "86069863-c4fa-458c-85b3-133bfce91062",
+                "createdAt": "2025-04-18T16:41:43.340000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "dc17a3b2-4836-4b8a-8a71-cabc92eb464b",
+                "createdAt": "2025-04-18T16:41:33.393000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 1db58dcda38c49879cf3df514e71874f)."
+            },
+            {
+                "id": "c9f1e6f2-d7b0-4746-aa5b-b293d79c1544",
+                "createdAt": "2025-04-18T16:40:42.638000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "acaae82b-2b78-403d-9235-e711d6db46b6",
+                "createdAt": "2025-04-18T16:39:42.880000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task eaad1228abe14a98b493c56f64e061fc)."
+            },
+            {
+                "id": "acf53014-9abd-4d60-9183-5309f145d71d",
+                "createdAt": "2025-04-18T16:22:55.920000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "ae1a2786-01b9-4356-bf75-7d6f99ddf3d5",
+                "createdAt": "2025-04-18T16:22:55.919000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/2138836476991326308) deployment completed."
+            },
+            {
+                "id": "6b62b0c5-c1c8-45cf-b807-79f703c98913",
+                "createdAt": "2025-04-18T16:21:55.650000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/2957993901051741001) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "7ff5c44b-3214-46d3-87f4-f1680d406257",
+                "createdAt": "2025-04-18T16:21:55.646000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "db6f9ab4-1d44-4f53-8197-2b2461f98a1e",
+                "createdAt": "2025-04-18T16:21:44.030000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task ed0fd1f97c2c479db47b0806b89f5f4d)."
+            },
+            {
+                "id": "2b24308f-2cb0-4234-9e3a-0ce829616c0a",
+                "createdAt": "2025-04-18T16:20:44.033000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "80027c24-5c42-4342-9fa4-a84c06b48b9e",
+                "createdAt": "2025-04-18T16:19:44.289000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 1db58dcda38c49879cf3df514e71874f)."
+            },
+            {
+                "id": "b246adae-a09a-46a0-a000-5d37c3ff6e45",
+                "createdAt": "2025-04-18T15:35:00.126000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "7b45d9c7-c756-4018-97c8-503822175a76",
+                "createdAt": "2025-04-18T15:35:00.125000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/2957993901051741001) deployment completed."
+            },
+            {
+                "id": "8313a934-c7fd-4ba0-8012-2bb36bea8d8d",
+                "createdAt": "2025-04-18T15:33:59.709000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/4984374765554410194) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "8b945c7d-ed6a-4696-bd4d-b176ac3c93fb",
+                "createdAt": "2025-04-18T15:33:59.704000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "83bb01f8-d9c6-4ce8-a612-6af0db90e280",
+                "createdAt": "2025-04-18T15:33:49.767000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 9800ebf92caa4352ab9d79ce851cd016)."
+            },
+            {
+                "id": "f5f2412a-7a0d-4b3c-bfba-bb9adf913391",
+                "createdAt": "2025-04-18T15:32:47.077000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "de5b32ee-d31e-4c2d-b027-10cfec5985b0",
+                "createdAt": "2025-04-18T15:31:48.693000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task ed0fd1f97c2c479db47b0806b89f5f4d)."
+            },
+            {
+                "id": "e3fe7ad2-be88-4965-88ca-6f9e4d0fc25f",
+                "createdAt": "2025-04-18T15:00:58.589000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "c0c95196-9571-4298-8c22-2161f8fba6ff",
+                "createdAt": "2025-04-18T15:00:58.502000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/4984374765554410194) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "1c7c2926-47db-43e2-8772-2094ab850328",
+                "createdAt": "2025-04-18T15:00:58.498000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "0463df20-13a7-4dc5-b878-3f510c71ae58",
+                "createdAt": "2025-04-18T15:00:48.703000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 1184c40b0ac34f4ab7d24cb7a581d3c0)."
+            },
+            {
+                "id": "5bd6b582-afca-4cbe-8101-fa4244310979",
+                "createdAt": "2025-04-18T14:42:07.821000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "0251267a-4264-4392-8f2e-8ba366f35a3a",
+                "createdAt": "2025-04-18T14:41:39.902000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "4a845bd6-66c2-4ad8-8a5b-5e65fa9771b4",
+                "createdAt": "2025-04-18T14:40:50.561000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 1184c40b0ac34f4ab7d24cb7a581d3c0)."
+            },
+            {
+                "id": "4a3ce827-accc-45e4-9f66-9b25378ee8da",
+                "createdAt": "2025-04-18T10:43:17.913000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "0dd78ec8-8a5e-4824-87bf-f05eecde1744",
+                "createdAt": "2025-04-18T04:42:44.056000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "3dc074e4-9b5b-4ff5-877b-930ace955cc5",
+                "createdAt": "2025-04-17T22:42:07.482000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "727008f9-689e-4e16-8b21-a142ec5c4970",
+                "createdAt": "2025-04-17T16:41:38.876000-04:00",
+                "message": "(service example-api) has reached a steady state."
+            },
+            {
+                "id": "e236dae3-83c0-4e27-aa41-26f742bcaced",
+                "createdAt": "2025-04-17T16:41:38.875000-04:00",
+                "message": "(service example-api) (deployment ecs-svc/4984374765554410194) deployment completed."
+            },
+            {
+                "id": "7cf82a16-bd52-4729-94df-28a8527ade3d",
+                "createdAt": "2025-04-17T16:40:38.734000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/9313225432052856269) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "fae7da85-0580-4ba3-8089-17f86b592309",
+                "createdAt": "2025-04-17T16:40:38.728000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "fd28051b-47b4-47b8-ae2c-fdca20c59ce9",
+                "createdAt": "2025-04-17T16:40:28.649000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 72b981d2c670455abb7ed1b2b6d5377e)."
+            },
+            {
+                "id": "6ad734f1-6d3b-407d-bc66-632d2c6c6ea3",
+                "createdAt": "2025-04-17T16:39:16.857000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "cb89f020-0d78-44dd-b7d7-9a942bdd76dd",
+                "createdAt": "2025-04-17T16:38:26.691000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 9800ebf92caa4352ab9d79ce851cd016)."
+            },
+            {
+                "id": "f5b8e279-e2bc-4ff4-899a-7ce502e98eb6",
+                "createdAt": "2025-04-17T16:34:51.779000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "d5be711f-f4f8-43b6-923c-c497c2133c5d",
+                "createdAt": "2025-04-17T16:34:51.649000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/2126546024136200556) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "539ebdd9-ed21-4523-a939-0a65f6138ca9",
+                "createdAt": "2025-04-17T16:34:51.645000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "a08b4d70-95e6-44c9-8d42-f510c1776ac2",
+                "createdAt": "2025-04-17T16:34:42.128000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 86dc2013fe7f47f881a64e99d7fd9f54)."
+            },
+            {
+                "id": "a7102fff-5e42-4d76-8d2e-901f73ed40bf",
+                "createdAt": "2025-04-17T16:34:42.094000-04:00",
+                "message": "(service example-api) (port 80) is unhealthy in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b) due to (reason Health checks failed with these codes: [500])."
+            },
+            {
+                "id": "cbcf7478-4753-4884-a4a6-576b00167210",
+                "createdAt": "2025-04-17T16:33:21.049000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "4e06c78e-10a1-41bf-a834-b51e576baa17",
+                "createdAt": "2025-04-17T16:32:31.905000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 86dc2013fe7f47f881a64e99d7fd9f54)."
+            },
+            {
+                "id": "0db0476a-bfe6-470b-9071-04029b57fff6",
+                "createdAt": "2025-04-17T16:30:28.689000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "a0cdaa92-9988-460a-a515-ffad76f4b3c5",
+                "createdAt": "2025-04-17T16:30:28.549000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/0358011050303928290) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "e7c816b5-5b83-4c2a-afb6-c1d1a1764866",
+                "createdAt": "2025-04-17T16:30:28.545000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "5bf1bb05-56b6-4b48-8480-69b5bc8e8759",
+                "createdAt": "2025-04-17T16:30:18.412000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 3d9b78cb8c7044b4bedcf629c14da3e1)."
+            },
+            {
+                "id": "31ad4d73-a953-47b1-b990-fa5aaac2cd4b",
+                "createdAt": "2025-04-17T16:30:18.365000-04:00",
+                "message": "(service example-api) (port 80) is unhealthy in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b) due to (reason Health checks failed with these codes: [500])."
+            },
+            {
+                "id": "902c45f0-fd13-4d88-95c1-226d282e1389",
+                "createdAt": "2025-04-17T16:28:57.546000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "4398a635-3bcf-491f-b79f-75874274c693",
+                "createdAt": "2025-04-17T16:28:06.246000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task 3d9b78cb8c7044b4bedcf629c14da3e1)."
+            },
+            {
+                "id": "3aecd2b1-7ab1-4805-b697-27da1e13b208",
+                "createdAt": "2025-04-17T16:21:40.450000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "570defb8-0990-41d7-b1f1-db6398f41306",
+                "createdAt": "2025-04-17T16:21:40.309000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/0358011050303928290) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "9f17b93f-8633-4e48-afbd-4e0561686545",
+                "createdAt": "2025-04-17T16:21:40.297000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "8b0f6cec-db15-4773-8b62-baa8b7182408",
+                "createdAt": "2025-04-17T16:21:30.423000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task b358263a486a40e2b6a1088dd551dc66)."
+            },
+            {
+                "id": "0dc1ee64-4832-4d54-bd87-aaad0a591121",
+                "createdAt": "2025-04-17T16:21:30.376000-04:00",
+                "message": "(service example-api) (port 80) is unhealthy in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b) due to (reason Health checks failed with these codes: [500])."
+            },
+            {
+                "id": "ff38ff69-b700-446e-9854-55da824f6ca5",
+                "createdAt": "2025-04-17T16:20:08.898000-04:00",
+                "message": "(service example-api) registered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "f4f0ef5c-a525-4a66-8554-764226d23239",
+                "createdAt": "2025-04-17T16:19:19.212000-04:00",
+                "message": "(service example-api) has started 1 tasks: (task b358263a486a40e2b6a1088dd551dc66)."
+            },
+            {
+                "id": "bb184e64-e90f-4c7d-bd1f-9032b7e52bc0",
+                "createdAt": "2025-04-17T16:13:02.921000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "21561706-9597-4066-81fd-1aa4c4737a52",
+                "createdAt": "2025-04-17T16:13:02.796000-04:00",
+                "message": "(service example-api, taskSet ecs-svc/0358011050303928290) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "63d191b0-4664-4b31-9f55-d02b0fbc1036",
+                "createdAt": "2025-04-17T16:13:02.791000-04:00",
+                "message": "(service example-api) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b)"
+            },
+            {
+                "id": "4a547c5a-3c66-46b8-895e-4f0e93439d3f",
+                "createdAt": "2025-04-17T16:12:52.801000-04:00",
+                "message": "(service example-api) has stopped 1 running tasks: (task 71766dcd10364c91a68d141e35a069c4)."
+            }
+        ],
+        "createdAt": "2025-04-16T13:16:58.688000-04:00",
+        "placementConstraints": [],
+        "placementStrategy": [],
+        "networkConfiguration": {
+            "awsvpcConfiguration": {
+                "subnets": [
+                    "subnet-08b5e355"
+                ],
+                "securityGroups": [
+                    "sg-ff9c9388"
+                ],
+                "assignPublicIp": "DISABLED"
+            }
+        },
+        "healthCheckGracePeriodSeconds": 60,
+        "schedulingStrategy": "REPLICA",
+        "deploymentController": {
+            "type": "ECS"
+        },
+        "createdBy": "arn:aws:iam::311974035819:user/sandbox-developer",
+        "enableECSManagedTags": false,
+        "propagateTags": "NONE",
+        "enableExecuteCommand": false,
+        "availabilityZoneRebalancing": "DISABLED"
+    }
+}

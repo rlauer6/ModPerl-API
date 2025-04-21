@@ -1,0 +1,65 @@
+package Bedrock::Apache::APIArgs;
+
+use strict;
+use warnings;
+
+use URI::Escape;
+use Tie::Hash;
+
+use parent qw(Tie::Hash);
+
+sub new {
+  my ( $class, $query_string ) = @_;
+
+  my %tied_hash;
+  tie %tied_hash, $class, $query_string;
+
+  my $self = bless { _hash => \%tied_hash }, $class;
+  return $self;
+}
+
+sub TIEHASH {
+  my ( $class, $query_string ) = @_;
+  my $self = {};
+
+  $query_string //= '';
+
+  while ( $query_string =~ /([^&=]+)=?([^&]*)/xsmg ) {
+    my ( $key, $value ) = ( $1, $2 );
+    push @{ $self->{$key} }, $value;
+  }
+
+  return bless $self, $class;
+}
+
+sub FETCH {
+  my ( $self, $key ) = @_;
+  return if !exists $self->{$key};
+
+  my @values = map { uri_unescape($_) } @{ $self->{$key} };
+  return @values > 1 ? \@values : $values[0];
+}
+
+sub STORE {
+  my ( $self, $key, $value ) = @_;
+  return push @{ $self->{$key} }, $value;
+}
+
+# OO Accessor for fetching query params
+sub get {
+  my ( $self, $key ) = @_;
+  return $self->{_hash}{$key};
+}
+
+sub EXISTS {
+  my ( $self, $key ) = @_;
+  return exists $self->{$key};
+}
+
+# Fix: Modify has() to use tied hash properly
+sub has {
+  my ( $self, $key ) = @_;
+  return exists $self->{_hash}{$key};
+}
+
+1;

@@ -1,0 +1,8 @@
+{
+    "ChangeInfo": {
+        "Id": "/change/C0059956H5C2DGBZL0UU",
+        "Status": "PENDING",
+        "SubmittedAt": "2025-04-16T11:58:04.416000+00:00",
+        "Comment": "Point sandbox-api.treasurersbriefcase.com to internal ALB via CNAME"
+    }
+}

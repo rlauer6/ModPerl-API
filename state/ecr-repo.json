@@ -1,0 +1,17 @@
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:us-east-1:311974035819:repository/example-api",
+        "registryId": "311974035819",
+        "repositoryName": "example-api",
+        "repositoryUri": "311974035819.dkr.ecr.us-east-1.amazonaws.com/example-api",
+        "createdAt": "2025-04-14T14:53:01.832000-04:00",
+        "imageTagMutability": "MUTABLE",
+        "imageScanningConfiguration": {
+            "scanOnPush": false
+        },
+        "encryptionConfiguration": {
+            "encryptionType": "AES256"
+        }
+    }
+}
+

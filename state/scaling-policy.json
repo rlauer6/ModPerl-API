@@ -1,0 +1,13 @@
+{
+    "PolicyARN": "arn:aws:autoscaling:us-east-1:311974035819:scalingPolicy:e2060e74-b91a-4f48-a95b-3366e5fa42e1:resource/ecs/service/fargate-cluster/example-api:policyName/web-scale-policy",
+    "Alarms": [
+        {
+            "AlarmName": "TargetTracking-service/fargate-cluster/example-api-AlarmHigh-4549248d-42ed-4ed9-8b35-88135e0ab404",
+            "AlarmARN": "arn:aws:cloudwatch:us-east-1:311974035819:alarm:TargetTracking-service/fargate-cluster/example-api-AlarmHigh-4549248d-42ed-4ed9-8b35-88135e0ab404"
+        },
+        {
+            "AlarmName": "TargetTracking-service/fargate-cluster/example-api-AlarmLow-4b53b603-7c9d-4f58-a7e1-2a469b3017e8",
+            "AlarmARN": "arn:aws:cloudwatch:us-east-1:311974035819:alarm:TargetTracking-service/fargate-cluster/example-api-AlarmLow-4b53b603-7c9d-4f58-a7e1-2a469b3017e8"
+        }
+    ]
+}

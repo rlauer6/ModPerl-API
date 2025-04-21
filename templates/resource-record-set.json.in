@@ -1,0 +1,15 @@
+{
+  "Comment": "Point @api_host@ to internal ALB via CNAME",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "@api_host@.",
+      "Type": "CNAME",
+      "TTL": 60,
+      "ResourceRecords": [
+        { "Value": "@alb_dns@" }
+      ]
+    }
+  }]
+}
+

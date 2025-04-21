@@ -1,0 +1,74 @@
+services:
+  localstack:
+    profiles:
+      - localstack
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    hostname: s3
+    networks:
+      default:
+        aliases:
+          - s3.localhost.localstack.cloud
+    ports:
+      - "127.0.0.1:4510-4530:4510-4530"
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4571:4571"
+    environment:
+      - SERVICES=s3,secretsmanager,kms,sqs,sns
+      - DEBUG=${DEBUG-}
+      - DATA_DIR=${DATA_DIR-}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  redis:
+    profiles:
+      - redis
+    image: redis/redis-stack-server:latest
+    ports: 
+      - '6379:6379'
+    expose:
+      - 6379
+  db:
+    image: mysql:8.4
+    command:
+      --bind-address=0.0.0.0
+    restart: 'no'
+    environment:
+      MYSQL_DATABASE: ${DBI_DB}
+      MYSQL_USER: ${DBI_USER}
+      MYSQL_PASSWORD: ${DBI_PASS}
+      MYSQL_ROOT_PASSWORD: ${DBI_ROOT_PASS}
+    ports:
+      - '3306:3306'
+    expose:
+      - 3306
+    volumes:
+      - my-db:/var/lib/mysql
+      - mysqld:/var/run/mysqld
+  web:
+    read_only: false
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/${DOCKERFILE}
+    image: "${DOCKERIMAGE}"
+    ports:
+      - '80:80'
+    expose:
+      - 80
+    environment:
+      API_NAME: ${API_NAME}
+      MYSQL_PASSWORD: ${DBI_PASS}
+      MYSQL_ROOT_PASSWORD: ${DBI_ROOT_PASS}
+      MYSQL_HOST: ${DBI_HOST}
+      API_KEY: ${API_KEY}
+      API_NO_AUTHENTICATION: ${API_NO_AUTHENTICATION}
+    volumes:
+      - ./start-server:/usr/local/bin/start-server
+      - ./setup.sql:/setup.sql
+
+volumes:
+  my-db:
+  mysqld:

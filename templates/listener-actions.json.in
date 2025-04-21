@@ -1,0 +1,6 @@
+[
+    {
+      "Type": "forward",
+      "TargetGroupArn": "@target_group_arn@"
+    }
+]

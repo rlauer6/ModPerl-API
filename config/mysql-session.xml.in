@@ -1,0 +1,25 @@
+<object >
+ <scalar name="binding">session</scalar>
+ <object name="config">
+  <scalar name="cleanup_login_sessions">yes</scalar>
+  <scalar name="cleanup_session_dir">yes</scalar>
+  <object name="cookie">
+   <scalar name="domain"></scalar>
+   <scalar name="expiry_secs">3600</scalar>
+   <scalar name="path">/</scalar>
+  </object>
+  <scalar name="data_source">dbi:mysql:@db_name@</scalar>
+  <scalar name="host"></scalar>
+  <scalar name="mysql_ssl">1</scalar>
+  <scalar name="login_cookie_expiry_days">365</scalar>
+  <scalar name="login_cookie_name">session_login</scalar>
+  <scalar name="param">session</scalar>
+  <scalar name="password">@db_password@</scalar>
+  <scalar name="purge_user_after">30</scalar>
+  <scalar name="table_name">session</scalar>
+  <scalar name="username">@db_user@</scalar>
+  <scalar name="verbose">info</scalar>
+ </object>
+ <scalar name="module">BLM::Startup::UserSession</scalar>
+ <scalar name="session">yes</scalar>
+</object>

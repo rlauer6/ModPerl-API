@@ -1,0 +1,48 @@
+{
+  "RuleArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:listener-rule/app/internal/8019af4728d3fab3/befe08c584662529/5a1e159284c8e945",
+  "Priority": "10",
+  "Conditions": [
+    {
+      "Field": "path-pattern",
+      "Values": [
+        "/example-api/*"
+      ],
+      "PathPatternConfig": {
+        "Values": [
+          "/example-api/*"
+        ]
+      }
+    },
+    {
+      "Field": "host-header",
+      "Values": [
+        "sandbox-api.treasurersbriefcase.com"
+      ],
+      "HostHeaderConfig": {
+        "Values": [
+          "sandbox-api.treasurersbriefcase.com"
+        ]
+      }
+    }
+  ],
+  "Actions": [
+    {
+      "Type": "forward",
+      "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b",
+      "Order": 1,
+      "ForwardConfig": {
+        "TargetGroups": [
+          {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:targetgroup/example-api-tg/5e7ca95f3ec9918b",
+            "Weight": 1
+          }
+        ],
+        "TargetGroupStickinessConfig": {
+          "Enabled": false,
+          "DurationSeconds": 3600
+        }
+      }
+    }
+  ],
+  "IsDefault": false
+}

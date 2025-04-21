@@ -1,0 +1,7 @@
+{
+  "awsvpcConfiguration": {
+    "subnets": ["subnet-08b5e355"],
+    "securityGroups": ["sg-158b8462"],
+    "assignPublicIp": "DISABLED"
+  }
+}

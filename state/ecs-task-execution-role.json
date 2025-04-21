@@ -1,0 +1,27 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "ecsTaskExecutionRole",
+        "RoleId": "AROAJ3CXCTHVUU5XVDMG6",
+        "Arn": "arn:aws:iam::311974035819:role/ecsTaskExecutionRole",
+        "CreateDate": "2018-03-20T23:52:13+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2008-10-17",
+            "Statement": [
+                {
+                    "Sid": "",
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ecs-tasks.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "MaxSessionDuration": 3600,
+        "RoleLastUsed": {
+            "LastUsedDate": "2025-04-18T20:33:46+00:00",
+            "Region": "us-east-1"
+        }
+    }
+}

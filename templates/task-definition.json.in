@@ -1,0 +1,76 @@
+{
+    "family": "@service_name@",
+    "containerDefinitions": [
+        {
+            "name": "@service_name@",
+            "image": "${digest}",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "@service_name@-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "secrets": [
+                {
+                    "name": "MYSQL_PASSWORD",
+                    "valueFrom": "@aws_secret_mysql_password_arn@"
+                },
+                {
+                    "name": "API_KEY",
+                    "valueFrom": "@aws_secret_api_key_arn@"
+                }
+            ],
+            "environment": [
+                {
+                    "name": "MYSQL_HOST",
+                    "value": "@mysql_host@"
+                },
+                {
+                    "name": "API_NO_AUTHENTICATION",
+                    "value": "0"
+                },
+                {
+                    "name": "API_NAME",
+                    "value": "@api_name@"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/@service_name@",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::@aws_account@:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::@aws_account@:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "enableFaultInjection": false
+}

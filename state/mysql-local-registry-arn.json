@@ -1,0 +1,22 @@
+{
+    "Id": "srv-bmwsit4dbpmcc2g3",
+    "Arn": "arn:aws:servicediscovery:us-east-1:311974035819:service/srv-bmwsit4dbpmcc2g3",
+    "Name": "mysql",
+    "NamespaceId": "ns-2aozi62s24ytigjs",
+    "DnsConfig": {
+        "NamespaceId": "ns-2aozi62s24ytigjs",
+        "RoutingPolicy": "MULTIVALUE",
+        "DnsRecords": [
+            {
+                "Type": "A",
+                "TTL": 60
+            }
+        ]
+    },
+    "Type": "DNS_HTTP",
+    "HealthCheckCustomConfig": {
+        "FailureThreshold": 1
+    },
+    "CreateDate": "2025-04-15T17:00:50.307000-04:00",
+    "CreatorRequestId": "212e9c8d-9309-432a-b5be-0560980120c7"
+}

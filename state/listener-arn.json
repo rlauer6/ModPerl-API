@@ -1,0 +1,17 @@
+{
+  "ListenerArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:listener/app/internal/8019af4728d3fab3/befe08c584662529",
+  "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:311974035819:loadbalancer/app/internal/8019af4728d3fab3",
+  "Port": 80,
+  "Protocol": "HTTP",
+  "DefaultActions": [
+    {
+      "Type": "fixed-response",
+      "Order": 1,
+      "FixedResponseConfig": {
+        "MessageBody": "",
+        "StatusCode": "503",
+        "ContentType": "text/plain"
+      }
+    }
+  ]
+}
