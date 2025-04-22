@@ -1,9 +1,9 @@
 project:
-  description: Bedrock::Apache::API
+  description: Bedrock::Apache::API::Routes
   author:
     name: Rob Lauer
     mailto: rclauer@gmail.com
-pm_module: Bedrock::Apache::API
+pm_module: Bedrock::Apache::API::Routes
 min-perl-version: 5.010
 dependencies:
   requires: requires
@@ -20,11 +20,11 @@ extra-files:
       - config/api.xml
       - config/mysql-session.xml
 resources:
-  homepage: http://github.com/rlauer6/blog-api
+  homepage: http://github.com/rlauer6/ModPerl-API
   bugtracker:
-    web: http://github.com/rlauer6/blog-api
+    web: http://github.com/rlauer6/ModPerl-API
     mailto: rclauer@gmail.com
   repository:
-    url: git://github.com/rlauer6/blog-api.git
-    web: http://github.com/rlauer6/blog-api
+    url: git://github.com/rlauer6/ModPerl-API.git
+    web: http://github.com/rlauer6/ModPerl-API
     type: 'git'

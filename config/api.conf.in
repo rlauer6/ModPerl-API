@@ -5,10 +5,10 @@ PerlPassENV API_KEY
 <LocationMatch "^@base_url@/?">
 
     SetHandler perl-script 
-    PerlResponseHandler Bedrock::Apache::@handler@
+    PerlResponseHandler @handler@
 
     PerlSetEnv CONFIG_PATH /var/www/bedrock/config
-    PerlSetENV API_NAME @api_name@
+    PerlSetEnv API_NAME @api_name@
 
     Options -Indexes
     Order allow,deny
@@ -17,8 +17,11 @@ PerlPassENV API_KEY
     SetEnvIf Host ^localhost env local
 
     <IfModule mod_headers.c>
-#      Header always set  Access-Control-Allow-Origin "http://blog-staging.tbcdevelopmentgroup.com" env=!local
-      Header always set  Access-Control-Allow-Origin "http://localhost:8080" env=local
+########################################################################
+# TBD: configure time options?
+#     Header always set  Access-Control-Allow-Origin "https://example.com" env=!local
+#     Header always set  Access-Control-Allow-Origin "http://localhost:8080" env=local
+########################################################################
       Header always set  Access-Control-Allow-Credentials true
       Header always set  Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE"
       Header always set  Access-Control-Allow-Headers "Content-Type"

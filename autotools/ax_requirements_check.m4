@@ -11,7 +11,6 @@ AC_DEFUN([AX_REQUIREMENTS_CHECK],[
   ads_PERL_MODULE([Data::Dumper],[], [])
   ads_PERL_MODULE([English],[], [])
   ads_PERL_MODULE([File::Path],[], [])
-  ads_PERL_MODULE([File::Slurp],[], [])
   ads_PERL_MODULE([JSON], [], [])
   ads_PERL_MODULE([Pod::Markdown], [], [])
   ads_PERL_MODULE([Readonly], [], [])

@@ -1,0 +1,92 @@
+package Bedrock::Apache::API::Handler;
+
+########################################################################
+# This is the default PerlResponseHandler for the Bedrock::Apache::API
+# framework. It's job is to simply read the API configuration file,
+# instantiate an instance of Bedrock::Apache::API or a subclass and
+# call the dispatcher.
+########################################################################
+
+use strict;
+use warnings;
+
+use APR::Table;
+
+use Apache2::Const -compile => qw(
+  OK
+  FORBIDDEN
+  HTTP_BAD_REQUEST
+  HTTP_UNAUTHORIZED
+  SERVER_ERROR
+);
+
+use Apache2::RequestIO  ();
+use Apache2::RequestRec ();
+use Apache2::RequestUtil;
+
+use Bedrock::XML;
+use Data::Dumper;
+use English qw(-no_match_vars);
+use Module::Load qw(load);
+
+{
+  my $config;
+
+########################################################################
+  sub fetch_config {
+########################################################################
+    return $config
+      if $config;
+
+    die "set API_NAME in your environment: PerlSetEnv API_NAME example-api\n"
+      if !$ENV{API_NAME};
+
+    my $config_path = sprintf '%s/%s.xml', $ENV{CONFIG_PATH}, $ENV{API_NAME};
+
+    die "no config file found at $config_path\n"
+      if !-s $config_path;
+
+    $config = eval { return Bedrock::XML->new($config_path); };
+
+    die "could not read config file ($config_path): $EVAL_ERROR\n"
+      if !$config || $EVAL_ERROR;
+
+    return $config;
+  }
+}
+
+########################################################################
+sub handler {
+########################################################################
+  my ($r) = @_;
+
+  return Apache2::Const::OK
+    if $r->method() =~ /OPTIONS|HEAD/xsm;
+
+  my $config = eval { fetch_config; };
+
+  if ( !$config || $EVAL_ERROR ) {
+    $r->log->error( 'unable to fetch configuration file: ' . $EVAL_ERROR );
+    return Apache2::Const::SERVER_ERROR;
+  }
+
+  if ( !$config->{class} ) {
+    $r->log->warn('using the default Bedrock::Apache::API?');
+  }
+
+  my $class = $config->{class} // 'Bedrock::Apache::API';
+
+  load $class;
+
+  my $api = eval { $class->new( request => $r, %{$config} ); };
+
+  if ( !$api || $EVAL_ERROR ) {
+    $r->log->error($EVAL_ERROR);
+
+    return Apache2::Const::SERVER_ERROR;
+  }
+
+  return $api->dispatch_request();
+}
+
+1;

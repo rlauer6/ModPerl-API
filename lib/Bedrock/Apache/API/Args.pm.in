@@ -1,0 +1,218 @@
+package Bedrock::Apache::API::Args;
+
+use strict;
+use warnings;
+
+use URI::Escape;
+use Tie::Hash;
+
+use parent qw(Tie::Hash);
+
+our $VERSION = '@PACKAGE_VERSION@';
+
+########################################################################
+sub new {
+########################################################################
+  my ( $class, $query_string ) = @_;
+
+  my %tied_hash;
+
+  tie %tied_hash, $class, $query_string;  ## no critic (ProhibitTies)
+
+  my $self = bless { _hash => \%tied_hash }, $class;
+
+  return $self;
+}
+
+########################################################################
+sub TIEHASH {
+########################################################################
+
+  my ( $class, $query_string ) = @_;
+  my $self = {};
+
+  $query_string //= q{};
+
+  while ( $query_string =~ /([^&=]+)=?([^&]*)/xsmg ) {
+    my ( $key, $value ) = ( $1, $2 );
+    push @{ $self->{$key} }, $value;
+  }
+
+  return bless $self, $class;
+}
+
+########################################################################
+sub FETCH {
+########################################################################
+  my ( $self, $key ) = @_;
+
+  return
+    if !exists $self->{$key};
+
+  my @values = map { uri_unescape($_) } @{ $self->{$key} };
+
+  return @values > 1 ? \@values : $values[0];
+}
+
+########################################################################
+sub STORE {
+########################################################################
+  my ( $self, $key, $value ) = @_;
+  return push @{ $self->{$key} }, $value;
+}
+
+# OO Accessor for fetching query params
+########################################################################
+sub get {
+########################################################################
+  my ( $self, $key ) = @_;
+  return $self->{_hash}{$key};
+}
+
+########################################################################
+sub EXISTS {
+########################################################################
+  my ( $self, $key ) = @_;
+  return exists $self->{$key};
+}
+
+# Fix: Modify has() to use tied hash properly
+########################################################################
+sub has {
+########################################################################
+  my ( $self, $key ) = @_;
+  return exists $self->{_hash}{$key};
+}
+
+########################################################################
+sub FIRSTKEY {
+########################################################################
+  my ($self) = @_;
+
+  my $a = keys %{$self};  # reset iterator
+  return each %{$self};
+}
+
+########################################################################
+sub NEXTKEY {
+########################################################################
+  my ($self) = @_;
+
+  return each %{$self};
+}
+
+1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Bedrock::Apache::API::Args - Tied hash and object interface for parsing query string arguments
+
+=head1 SYNOPSIS
+
+  use Bedrock::Apache::API::Args;
+
+  my $args = Bedrock::Apache::API::Args->new("foo=1&bar=2&bar=3");
+
+  # Object-style access
+  my $foo = $args->get("foo");      # "1"
+  my $bar = $args->get("bar");      # ["2", "3"]
+
+  # Tied-hash access (e.g., for iteration)
+  my $hashref = $args->{_hash};
+  print $hashref->{foo};            # "1"
+  print join(",", @{$hashref->{bar}}); # "2,3"
+
+=head1 DESCRIPTION
+
+This module parses a query string (e.g., from an Apache request) and provides
+both a tied hash and object-oriented interface for accessing query parameters.
+
+Multiple values for a parameter are stored as an array internally. When accessed
+via C<get>, a scalar is returned for single values, and an array reference for
+multiple values.
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+  my $args = Bedrock::Apache::APIArgs->new($query_string);
+
+Parses the provided query string and returns a new C<Bedrock::Apache::APIArgs>
+object. The internal storage is a tied hash, accessible via the C<_hash> key.
+
+=head1 METHODS AND SUBROUTINES
+
+=head2 get
+
+  $value = $args->get($key);
+
+Returns the value associated with C<$key>. If there are multiple values,
+an array reference is returned. If only one value exists, the scalar is returned.
+Returns undef if the key does not exist.
+
+=head2 has
+
+  if ($args->has("foo")) { ... }
+
+Returns true if the key exists in the query string. This method accesses the tied
+hash internally.
+
+=head1 TIED HASH INTERFACE
+
+The object also supports the tied hash interface. Internally, the query parameters
+are stored as a tied hash with the following methods:
+
+=over 4
+
+=item *
+
+FETCH
+
+=item *
+
+STORE
+
+=item *
+
+EXISTS
+
+=item *
+
+FIRSTKEY
+
+=item *
+
+NEXTKEY
+
+=back
+
+These allow the tied hash (found in C<$self->{_hash}>) to be used in a normal
+hash context, including iteration and existence checks.
+
+=head1 DEPENDENCIES
+
+=over 4
+
+=item *
+
+L<Tie::Hash>
+
+=item *
+
+L<URI::Escape>
+
+=back
+
+=head1 AUTHOR
+
+Rob Lauer - <rlauer6@comcast.net>
+
+=head1 LICENSE
+
+This module is released under the same terms as Perl itself.
+
+=cut

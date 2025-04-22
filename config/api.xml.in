@@ -9,4 +9,23 @@
   <scalar name="use_sessions">1</scalar>
   <scalar name="API_KEY">@api_key@</scalar>
   <scalar name="mysql_ssl">1</scalar>
+  <scalar name="base_url">/@api_name@</scalar>
+  <scalar name="class">@api_class@</scalar>
+  <object name="routes">
+    <array name="version">
+      <scalar>GET</scalar>
+    </array>
+    <array name="session">
+      <scalar>GET</scalar>
+    </array>
+    <array name="env">
+      <scalar>GET</scalar>
+    </array>
+    <array name="csp_violation_report">
+      <scalar>POST</scalar>
+    </array>
+  </object>
+  <array name="protected">
+    <scalar>env</scalar>
+  </array>
 </object>

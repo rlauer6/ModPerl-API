@@ -50,6 +50,6 @@ state/image.json: $(IMAGE_DEPS)
 	test -n "$$NO_CACHE" && NO_CACHE='--no-cache'; \
 	echo "$$NO_CACHE"; \
 	pushd docker >/dev/null; \
-	docker build $$NO_CACHE --build-arg VERSION=$(VERSION) -f Dockerfile . -t $(TAG); \
+	docker build $$NO_CACHE --build-arg API_NAME=$(API_NAME) --build-arg VERSION=$(VERSION) -f Dockerfile . -t $(TAG); \
 	popd >/dev/null; \
 	docker inspect $(TAG):latest  | jq -r '.[]|.' > $@

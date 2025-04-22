@@ -1,6 +1,7 @@
 FROM bedrock-debian
 
 ARG VERSION
+ARG API_NAME
 
 RUN apt update && apt-get install -y \
        unzip autoconf autoconf-archive make libtool automake \
@@ -15,8 +16,8 @@ RUN a2dissite 000-default
 
 RUN cpanm -n -v --mirror-only --reinstall Bedrock
 
-COPY Bedrock-Apache-API-$VERSION.tar.gz .
-RUN cpanm -n -v Bedrock-Apache-API-$VERSION.tar.gz
+COPY Bedrock-Apache-API-Routes-$VERSION.tar.gz .
+RUN cpanm -n -v Bedrock-Apache-API-Routes-$VERSION.tar.gz
 
 COPY apache2.conf /etc/apache2
 COPY api-vhost.conf /etc/apache2/sites-available
@@ -29,7 +30,7 @@ RUN a2enconf api
 COPY mysql-session.xml /var/www/bedrock/config.d/startup
 
 # CONFIGS
-COPY api.xml /var/www/bedrock/config/example-api.xml
+COPY api.xml /var/www/bedrock/config/$API_NAME.xml
 
 COPY setup.sql /usr/local/share/setup.sql
 

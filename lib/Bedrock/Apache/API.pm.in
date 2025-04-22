@@ -21,8 +21,9 @@ use JSON;
 use Bedrock::Context;
 use Bedrock::Handler;
 use Module::Load qw(load);
+use List::Util qw(any);
 use URI::Escape;
-use Bedrock::Apache::APIArgs;
+use Bedrock::Apache::API::Args;
 use Bedrock::XML;
 use Bedrock::Apache::Bedrock;
 
@@ -33,27 +34,27 @@ use Readonly;
 Readonly::Scalar our $TRUE  => 1;
 Readonly::Scalar our $FALSE => 0;
 
-__PACKAGE__->follow_best_practice();
-
-__PACKAGE__->mk_accessors(
-  qw(
-    api
-    api_config
-    api_methods
-    autoconnect
-    base_url
-    bedrock_handler
-    config
-    context
-    cookieless_sessions
-    data
-    dbi
-    params
-    request
-    session
-    use_sessions
-  )
+my @ACCESSORS = qw(
+  api
+  api_config
+  autoconnect
+  base_url
+  bedrock_handler
+  config
+  context
+  cookieless_sessions
+  data
+  dbi
+  params
+  protected_methods
+  request
+  routes
+  session
+  use_sessions
 );
+
+__PACKAGE__->follow_best_practice();
+__PACKAGE__->mk_accessors(@ACCESSORS);
 
 use parent qw(Class::Accessor::Fast);
 
@@ -66,15 +67,54 @@ sub new {
 
   my $options = ref $args[0] ? $args[0] : {@args};
 
+  my @extra_accessors;
+
+  foreach my $k ( keys %{$options} ) {
+    next if any { $_ eq $k } @ACCESSORS;
+    push @extra_accessors, $k;
+  }
+
+  if (@extra_accessors) {
+    $class->mk_accessors(@extra_accessors);
+  }
+
+  my %app_config;
+  @app_config{@extra_accessors} = @{$options}{@extra_accessors};
+
   my $self = $class->SUPER::new($options);
+
+  my $r = $self->get_request;
+
+  $self->set_api_config( \%app_config );
 
   my $retval = eval { $self->init_api; };
 
   return $self->show_error($EVAL_ERROR)
     if !$retval || $EVAL_ERROR;
 
-  if ( $self->can('init') ) {
-    $self->init;
+  $self->init_routes;
+
+  die "No routes defined in configuration!\n"
+    if !$self->get_routes;
+
+  return $self;
+}
+
+########################################################################
+sub init_routes {
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $api_config = $self->get_api_config;
+
+  if ( exists $api_config->{routes} ) {
+    $self->set_routes( $api_config->{routes} );
+  }
+
+  if ( exists $api_config->{protected} ) {
+    $self->set_protected_methods( $api_config->{protected} );
   }
 
   return $self;
@@ -84,6 +124,8 @@ sub new {
 sub show_error {
 ########################################################################
   my ( $self, $error ) = @_;
+
+  $error //= 'UNKNOWN ERROR';
 
   my $r = $self->get_request;
 
@@ -121,46 +163,49 @@ sub init_api {
 
   $r->log->debug( Dumper( [ headers => $r->headers_in ] ) );
 
+  ######################################################################
+  # 1. initialize Bedrock, read Bedrock configuration files
+  ######################################################################
   $self->set_bedrock_handler( init_bedrock_handler($r) );
 
   $self->set_config( $self->get_bedrock_handler->get_config );
-
-  my $api_name = $ENV{API_NAME};
-
-  if ($api_name) {
-    my $api_config = Bedrock::XML->new( sprintf '%s/%s.xml', $ENV{CONFIG_PATH}, $api_name );
-    $self->set_api_config($api_config);
-
-    foreach (qw(use_sessions autoconnect )) {
-      next if !exists $api_config->{$_};
-
-      my $setter = 'set_' . $_;
-      $self->$setter( $api_config->{$_} );
-    }
-
-    $r->log->error( Dumper( [ api_config => $api_config ] ) );
-  }
 
   my $context = Bedrock::Context->new( CONFIG => $self->get_config, APACHE_HANDLER => $r );
 
   $self->set_context($context);
 
+  ######################################################################
+  # 2. Fetch post data
+  ######################################################################
   $self->set_data( $self->get_json_request );
 
+  ######################################################################
+  # 3. Initialise session manager
+  ######################################################################
   my $use_sessions = $self->get_use_sessions // $TRUE;
 
   if ($use_sessions) {
     $self->init_session( $self->get_cookieless_sessions );
+
     $context->{SESSION} = $self->get_session;
   }
 
+  ######################################################################
+  # 4. Connect to database
+  ######################################################################
   if ( $self->get_autoconnect ) {
     $self->connect_db;
   }
 
+  ######################################################################
+  # 5. Parse URI and get endpoint
+  ######################################################################
   $self->parse_uri;
 
-  my $args = Bedrock::Apache::APIArgs->new( $r->args );
+  ######################################################################
+  # 6. Parse query args
+  ######################################################################
+  my $args = Bedrock::Apache::API::Args->new( $r->args );
 
   $self->set_params($args);
 
@@ -181,9 +226,9 @@ sub dispatch_request {
     return Apache2::Const::HTTP_BAD_REQUEST;
   }
 
-  my $api_methods = $self->get_api_methods;
+  my $routes = $self->get_routes;
 
-  if ( !exists $api_methods->{$api} ) {
+  if ( !exists $routes->{$api} ) {
     $self->log->warn( sprintf 'no such endpoint (%s) - using default handler', $api );
 
     $r->handler('default-handler');
@@ -191,13 +236,18 @@ sub dispatch_request {
 
     return Apache2::Const::DECLINED;
   }
-  else {
-    my $method = $self->get_request->method;
 
-    if ( !grep { $_ eq $method } @{ $api_methods->{$api} } ) {
-      $self->log->error("HTTP method $method not allowed for $api");
-      return Apache2::Const::HTTP_BAD_REQUEST;
-    }
+  # authenticate request if in protected array
+  if ( $self->get_protected_methods && any { $api eq $_ } @{ $self->get_protected_methods } ) {
+    return Apache2::Const::HTTP_UNAUTHORIZED
+      if !$self->authenticate_request;
+  }
+
+  my $method = $self->get_request->method;
+
+  if ( !grep { $_ eq $method } @{ $routes->{$api} } ) {
+    $self->log->error("HTTP method $method not allowed for $api");
+    return Apache2::Const::HTTP_BAD_REQUEST;
   }
 
   $api = "api_$api";
@@ -297,11 +347,18 @@ sub init_session {
   my $r = $self->get_request;
 
   my $session_config = $self->get_config->get_module_config('UserSession');
-  my $api_config     = $self->get_api_config;
 
-  $session_config->{data_source} = sprintf '%s:%s:%s', @{$api_config}{qw( DBI_DSN DBI_DB DBI_HOST)};
-  $session_config->{username}    = $api_config->{DBI_USER};
-  $session_config->{password}    = $api_config->{DBI_PASS};
+  my $api_config = $self->get_api_config;
+
+  my ( $dbi_dsn, $dbi_db, $dbi_host, $dbi_user ) = @{$api_config}{qw( DBI_DSN DBI_DB DBI_HOST DBI_USER)};
+
+  die "missing database configuration values\n"
+    if !( $dbi_dsn && $dbi_db && $dbi_host && $dbi_user );
+
+  $session_config->{data_source} = sprintf '%s:%s:%s', $dbi_dsn, $dbi_db, $dbi_host;
+
+  $session_config->{username} = $dbi_user;
+  $session_config->{password} = $api_config->{DBI_PASS};
 
   $session_config->{cookieless_sessions} //= q{};
 
@@ -323,7 +380,7 @@ sub init_session {
   ## TBD: Needs testing!
   ## -------------------------------------------------------------------
   ##
-  ## At one point I did not kno if AJAX calls
+  ## At one point I did not know if AJAX calls
   ## would automatically send cookies if we returned them for login
   ## sessions. Apparently, once we get a cookie from our login
   ## endpoint it gets sent automatically on subsequent AJAX calls. IOW
@@ -380,6 +437,9 @@ sub connect_db {
   my $config = $self->get_api_config;
 
   my ( $database, $host, $user, $pass, $dsn ) = @{$config}{qw(DBI_DB DBI_HOST DBI_USER DBI_PASS DBI_DSN)};
+
+  die "missing database configuration values\n"
+    if !( $database && $host && $user && $dsn );
 
   my $connect_str = sprintf '%s:%s:%s', $dsn, $database, $host;
 
@@ -481,6 +541,38 @@ sub get_ip {
 }
 
 ########################################################################
+sub authenticate_request {
+########################################################################
+  my ($self) = @_;
+
+  my $r          = $self->get_request;
+  my $api_config = $self->get_api_config->{API_NO_AUTHENTICATION};
+
+  my $authentication_disabled //= $ENV{API_NO_AUTHENTICATION};
+
+  return $TRUE
+    if $authentication_disabled;
+
+  # Check the X-API-KEY header
+  my $header_api_key = $r->headers_in->{'X-API-KEY'};
+
+  my $api_key = $api_config->{API_KEY};
+  $api_key //= $ENV{API_KEY};
+
+  die "no API_KEY defined in environment or configuration file!\n"
+    if !$api_key;
+
+  return $TRUE
+    if $header_api_key && $api_key eq $header_api_key;
+
+  $r->log_error('Invalid or missing X-API-KEY');
+
+  $r->log->error( Dumper( [ header => $r->headers_in ] ) );
+
+  return $FALSE;
+}
+
+########################################################################
 sub DESTROY {
 ########################################################################
   my ($self) = @_;
@@ -497,3 +589,236 @@ sub DESTROY {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Bedrock::Apache::API - Base class for implementing modular, method-validated APIs in mod_perl
+
+=head1 SYNOPSIS
+
+In your API class:
+
+  package MyApp::API;
+
+  use parent qw(Bedrock::Apache::API);
+
+  our $VERSION = '1.2.3';
+
+  sub api_version {
+    my ($self) = @_;
+
+    my $r = $self->get_request;
+
+    my $dispatch = {
+      GET => sub {
+        $r->content_type('text/plain');
+        $r->print($VERSION);
+      },
+    };
+
+    return $dispatch->{$method}->();
+  }
+
+In your configuration file:
+
+  <object name="routes">
+    <array name="version">
+      <scalar>GET</scalar>
+    </array>
+  </object>
+
+See L<Bedrock::Apache::API::Routes> for an example API.
+
+=head1 DESCRIPTION
+
+C<Bedrock::Apache::API> provides a base class building REST-style APIs
+under mod_perl. You this module subclass, define endpoints (e.g.,
+C<version>, C<status>) and register supported HTTP methods per
+endpoint. Then implement your endpoints.
+
+The base class takes care of:
+
+- Parsing parameters and cookies
+- Session integration
+- Response rendering (typically JSON)
+- Validating that only declared methods are used
+- Storing configuration
+- Authenticating requests against an API key
+
+=head1 USAGE OVERVIEW
+
+=over 4
+
+=item * Subclass C<Bedrock::Apache::API>
+
+=item * Add routes to a configuration file
+
+=item * For each endpoint, implement C<api_{name}()> and route by method
+
+=back
+
+=head1 CONSTRUCTOR
+
+=head2 new( \%options )
+
+Instantiates the API object.
+
+Supported keys:
+
+=over 4
+
+=item * C<request> - Apache2::RequestRec object
+
+=item * C<config> - Optional config hashref
+
+=item * C<params> - Optional parsed params
+
+=item * C<base_url> - Optional base path
+
+=item * C<autoconnect> - Connect to DB automatically
+
+=item * C<use_sessions> - Enable session support
+
+=item * C<cookieless_sessions> - Allow URL token fallback
+
+=back
+
+=head1 METHODS AND SUBROUTINES
+
+The C<init_api> and C<init_routes> methods should be mostly opaque to
+you the REST API writer. They are documented here for completeness.
+
+=head2 init_api
+
+Called automatically by C<new()> to bootstrap configuration, context, params,
+DBI connection, and session.
+
+=head2 init_routes( \%endpoint_to_methods )
+
+Intializes the list of valid endpoints and HTTP methods. See L</ROUTE
+CONFIGURATION> for more details.
+
+=head2 get_param(param-name)
+
+Returns the decoded query or POST parameter.
+
+=head2 get_cookie(cookie-name)
+
+Returns a cookie value.
+
+=head2 render_response($data)
+
+Outputs a data structure (hashref or arrayref) as a JSON response with the
+appropriate content-type header.
+
+=head2 show_error($message)
+
+Writes the error to Apache's log and sends a 500 error with error
+message.
+
+=head2 get_request
+
+Returns the Apache2::RequestRec object.
+
+=head2 set_api_config( \%config )
+
+Stores a config hash in the object for use by handlers.
+
+=head2 get_config
+
+Retrieves the config set via C<set_api_config>.
+
+=head2 get_context
+
+Returns the Bedrock::Context object associated with the request.
+
+=head1 ROUTE CONFIGURATION
+
+ Typically routes are defined in your API's configuration file like this:
+
+  <object name="routes">
+    <array name="version">
+      <scalar>GET</scalar>
+    </array>
+    <array name="customer">
+      <scalar>GET</scalar>
+      <scalar>POST</scalar>
+    </array>
+  </object>
+  <array name="protected">
+    <scalar>customer</scalar>
+  </array>
+
+Each route should define an array of HTTP methods that endpoint will
+support. You then implement a method with the naming convention
+C<api_{route}>. 
+
+I<If your route is more complex, for example C</contacts/officers> the
+endpoint you would define is still C<customer>. That is, you must
+handle more complex routes inside your endpoint's method.>
+
+=head2 Authenticating Requests
+
+You can create an optional C<protected> array that defines routes that
+cause the C<authenticate_request()> method to be called.  The default
+behavior will check the C<X-API-KEY> header against the value of
+C<API_KEY> that you define in your configuration file.  If the values
+do not match, an 401 (UNAUTHORIZED) will will be returned.
+
+Override the C<authenticate_request()> method if you want more robust
+authentication or authorization. The method should return a true value
+if the request should be allowed.
+
+This method is called during the construction of the object. If you
+want to override this method you must set the routes with the
+C<set_routes()> method.
+
+Example:
+
+  $self->set_routes({
+    ping    => [qw(GET)],
+    login   => [qw(POST)],
+    profile => [qw(GET POST PUT)],
+  });
+
+=head1 API METHOD CONVENTION
+
+For each key in your C<routes> configuration array, you must implement
+a method called:
+
+  api_{key}
+
+Inside this method, you should dispatch to another method or
+subroutine based on the HTTP method:
+
+  sub api_profile {
+    my ($self) = @_;
+
+    my $method = $self->get_request->method;
+
+    return {
+      GET => sub { ... },
+      POST => sub { ... },
+    }->{$method}->($self);
+  }
+
+The parent class will automatically return 400 if the requested method
+was not listed in your route table.
+
+=head1 SEE ALSO
+
+L<Apache2::Const>, L<Bedrock::Apache::ExampleAPI>, L<Bedrock::Apache::Handler>, L<Apache2::RequestRec>
+
+=head1 AUTHORS
+
+Rob Lauer - <rlauer6@comcast.net>
+
+=head1 LICENSE
+
+This module is released under the same terms as Perl itself.
+
+=cut

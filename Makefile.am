@@ -17,9 +17,6 @@ DOMAIN         = @domain@
 # this is the base module we build in the CPAN distribution
 MODULE_NAME    = Bedrock::Apache::API
 
-# the suffix name of your mod_perl handler, e.g. ExampleAPI
-HANDLER        = @handler@
-
 # API key sent in the header as X-API-KEY which your API can use to
 # authenticate requests
 API_KEY        = @api_key@
@@ -46,7 +43,7 @@ PHONY_TARGETS =
 # ...likewise with CLEANFILES
 CLEANFILES = 
 
-all: $(TARBALL) image
+all: $(TARBALL) image README.md
 
 # Apache configs (.conf), application configs (.xml)
 include config/Makefile.inc

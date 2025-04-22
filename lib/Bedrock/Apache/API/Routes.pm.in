@@ -1,0 +1,265 @@
+package Bedrock::Apache::API::Routes;
+# Example REST API using the Bedrock::Apache::API framework
+
+use strict;
+use warnings;
+
+use Apache2::Const -compile => qw(
+  FORBIDDEN
+  HTTP_BAD_REQUEST
+  HTTP_NO_CONTENT
+  HTTP_NOT_FOUND
+  HTTP_UNAUTHORIZED
+  OK
+  SERVER_ERROR
+);
+
+use Carp::Always;
+use Carp;
+use Data::Dumper;
+use English qw(-no_match_vars);
+
+use parent qw(Bedrock::Apache::API);
+
+use Readonly;
+
+Readonly::Scalar our $TRUE  => 1;
+Readonly::Scalar our $FALSE => 0;
+
+__PACKAGE__->follow_best_practice;
+__PACKAGE__->mk_accessors(qw(version));
+
+our $VERSION = '@PACKAGE_VERSION@';
+
+########################################################################
+# /env
+########################################################################
+sub api_env {
+########################################################################
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $sub = {
+    GET => sub {
+      return $self->send_json_response( \%ENV );
+    }
+  }->{ $r->method };
+
+  return $sub->($self);
+}
+
+########################################################################
+# /session
+########################################################################
+sub api_session {
+########################################################################
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $sub = {
+    GET => sub {
+
+      my $session = $self->get_session;
+
+      return $self->send_json_response( { %{$session} } )
+        if $session;
+
+      return Apache2::Const::HTTP_BAD_REQUEST;
+    }
+  }->{ $r->method };
+
+  return $sub->($self);
+}
+
+########################################################################
+# /csp-violation-report
+########################################################################
+sub api_csp_violation_report {
+########################################################################
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $sub = {
+    POST => sub {
+      my $data = $self->get_data();
+
+      $r->log->error( JSON->new->encode($data) );
+
+      return Apache2::Const::HTTP_NO_CONTENT;
+    }
+  }->{ $r->method };
+
+  return $sub->($self);
+}
+
+########################################################################
+########################################################################
+# /version
+########################################################################
+########################################################################
+
+########################################################################
+sub api_version {
+########################################################################
+  my ($self) = @_;
+
+  my $r = $self->get_request;
+
+  my $sub = {
+    GET => sub {
+      my ($self) = @_;
+
+      $r->content_type('text/plain');
+
+      $r->print($VERSION);
+
+      return Apache2::Const::OK;
+    }
+  }->{ $r->method };
+
+  return $sub->($self);
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+Bedrock::Apache::API::Routes - Example mod_perl REST API using the Bedrock::Apache::API framework
+
+=head1 SYNOPSIS
+
+Configured in Apache as:
+
+  PerlSetEnv API_NAME example-api
+
+  PerlSetEnv CONFIG_PATH /var/www/bedrock/config
+
+  <Location /example-api>
+      SetHandler perl-script
+      PerlResponseHandler Bedrock:Apache::API::Handler
+      Require all granted
+  </Location>
+
+=head1 DESCRIPTION
+
+This module implements an example RESTful API using the
+C<Bedrock::Apache::API> framework.
+
+=head1 CONFIGURATION
+
+Along with the Apache configuration described above you need to
+configure a Bedrock XML file that has the same name as the API and store
+that in the CONFIG_PATH you specified in the Apache config file. A
+typical configuration file looks something like this:
+
+ <object>
+   <scalar name="DBI_HOST">example-api_db_1;mysql_ssl=1</scalar>
+   <scalar name="DBI_DSN">dbi:mysql</scalar>
+   <scalar name="DBI_USER">fred</scalar>
+   <scalar name="DBI_PASS">*******</scalar>
+   <scalar name="DBI_DB">example</scalar>
+   <scalar name="mysql_ssl">1</scalar>
+   <scalar name="SESSION_DIR">/var/www/bedrock/session</scalar>
+   <scalar name="autoconnect">0</scalar>
+   <scalar name="use_sessions">1</scalar>
+   <scalar name="API_KEY">06FDC7C2-1ED9-11F0-BAC6-0E624A5F550E</scalar>
+   <scalar name="API_NO_AUTHENTICATE>1</scalar>
+   <scalar name="base_url">/example-api</scalar>
+   <scalar name="class">Bedrock::Apache::ExampleAPI</scalar>
+ </object>
+
+Your API can access these parameters using getters of the same names
+(e.g. C<get_API_KEY>) or retrieve the entire hash using the
+C<api_config> method.
+
+=head2 Database Parameters
+
+C<DBI_*> configuration values are used to connect to a MySQL
+database. If you are using sessions you must have a session table
+setup. Here's some SQL you can use to setup your session table.
+
+ CREATE DATABASE IF NOT EXISTS example;
+ 
+ DROP user IF EXISTS fred;
+ 
+ CREATE USER 'fred'@'%' IDENTIFIED BY '*********';
+ 
+ GRANT ALL PRIVILEGES ON *.* TO 'fred'@'%';
+ 
+ USE example;
+ 
+ CREATE TABLE IF NOT EXISTS session 
+  (
+   id           int(11)      not null auto_increment primary key,
+   session      varchar(50)  default null,
+   login_cookie varchar(50)  not null default '',
+   username     varchar(50)  not null default '',
+   password     varchar(64)  default null,
+   firstname    varchar(30)  default null,
+   lastname     varchar(50)  default null,
+   email        varchar(100) default null,
+   prefs        text,
+   updated      timestamp    not null default current_timestamp on update current_timestamp,
+   added        datetime     default null,
+   expires      datetime     default null
+ );
+
+If you set C<autoconnect> to a true value, the API
+initialization methods will open a database connection.  You can use
+the C<get_dbi> method to retrieve the database handle.
+
+=head2 Session Parameters
+
+=over 5
+
+=item C<use_sessions>
+
+Set this variable to a true value to enable the use of sessions via
+L<BLM::Startup::UserSession>.
+
+=item C<SESSION_DIR>
+
+Set a session directory if you want to create session specific
+directories. See L<BLM::Startup::SessionManager> for regarding session
+directory and session file methods.
+
+=back
+
+=head2 Authentication Parameters
+
+=over 5
+
+=item C<API_KEY>
+
+If you want a simple authentication method for your API clients, set
+this value. The framework will create an API key for you when you
+configure the project if you do not provide one.
+
+=item C<API_NO_AUTHENICATE>
+
+Set this to a true value if you do not want any of your API requests
+to be authenticated (even when they are specified in the
+C<protected_methods> array. If you want some endpoints to implement an
+authentication check.
+
+=back
+
+=head1 AUTHOR
+
+Rob Lauer - <rclauer@gmail.com>
+
+=head1 SEE ALSO
+
+L<mod_perl>, L<Apache2::RequestRec>
+
+=cut
+
+1;

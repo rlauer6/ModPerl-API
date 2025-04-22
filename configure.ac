@@ -334,7 +334,7 @@ dnl ########################################################################
 AC_ARG_WITH(
 	[service_name],[  --with-service-name ],
 	[ service_name="$withval" ],
-        [ service_name=example-api ]
+        [ service_name=bedrock-api ]
 )
 
 AC_SUBST([service_name])
@@ -343,7 +343,7 @@ dnl ########################################################################
 AC_ARG_WITH(
 	[api_name],[  --with-api-name ],
 	[ api_name="$withval" ],
-        [ api_name="example-api" ]
+        [ api_name="bedrock-api" ]
 )
 
 AC_SUBST([api_name])
@@ -361,18 +361,9 @@ AC_SUBST([api_key])
 
 dnl ########################################################################
 AC_ARG_WITH(
-	[handler],[  --with-handler ],
-	[ handler="$withval" ],
-        [ handler="ExampleHandler" ]
-)
-
-AC_SUBST([handler])
-
-dnl ########################################################################
-AC_ARG_WITH(
 	[domain],[  --with-domain ],
 	[ domain="$withval" ],
-        [ domain="example-api" ]
+        [ domain="" ]
 )
 
 AC_SUBST([domain])
@@ -381,7 +372,7 @@ dnl ########################################################################
 AC_ARG_WITH(
 	[base_url],[  --with-base_url ],
 	[ base_url="$withval" ],
-        [ base_url="/example-api" ]
+        [ base_url="/bedrock-api" ]
 )
 
 AC_SUBST([base_url])

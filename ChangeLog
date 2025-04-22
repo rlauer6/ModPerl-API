@@ -1,3 +1,71 @@
+Mon Apr 21 16:16:16 2025  Rob Lauer  <rlauer6@comcast.net>
+
+	[1.0.1]:
+	* Makefile.am
+	- +README.md
+	- remove HANDLER, harcoded in config/Makefile.inc
+	* README.md: generated
+	* VERSION: bump
+	* build-local: default api name now bedrock-api
+	* buildspec.yml
+	- Bedrock::Apache::API::Routes now
+	* config/Makefile.in
+	- harcode HANDLER
+	- resolve api_handler, api_class
+	* config/api.conf.in
+	- PerlSetEnv, not ENV
+	* configure.ac
+	- bedrock-api, not example-api
+	- removed --with-handler since it is not hard coded to Bedrock::Apache::API::Routes
+	* config/api.xml.in
+	- +class, base_url
+	- add routes
+	* docker/Dockerfile
+	- tarball is now Bedrock-Apache-API-Routes-$VERSION.tar.gz 
+	- don't hard code api name use $API_NAME
+	* docker/Makefile.cin
+	- add API_NAME buildarg
+	* lib/Bedrock/Apache/API.pm.in
+	- Bedrock::Apache::API::Args
+	- api_methods => routes
+	- some refactoring
+	- +protected_methods
+	- pod updates
+	(new)
+	- create accessors and config object
+	- init_routes(), not init()
+	(init): renamed init_routes
+	(init_api)
+	- docs
+	- remove configuration reading and move to ::Handler]
+	(dispatch_request)
+	- authenticate if protected method
+	- get_routes
+	(init_session): die if no db configuration values
+	(connect_db): likewise
+	(authenticate_request): new
+	(show_error): UNKNOWN ERROR if no message
+	* lib/Bedrock/Apache/API/Args.pm.in
+	- renamed
+	- docs
+	(FIRSTKEY): new
+	(NEXTKEY): new
+	* lib/Bedrock/Apache/ExampleAPI.pm.in
+	- renamed lib/Bedrock/Apache/API/Routes.pm.in
+	- pod
+	- stripped to just endpoint implementations
+	* lib/Bedrock/Apache/API/Handler.pm.in: new
+	* requires
+	- remove unneeded modules
+	* source/Makefile.inc
+	- moved all file lib/Bedrock/Apache/API
+	- tarball name now Bedrock-Apache-API-Routes-$(VERSION).tar.gz
+	* autotools/ax_requirements_check.m4: likewise
+	- replace ExampleHandler.pm.in with Handler.pm.in
+	- exit make on build error
+	- add .pm files to CLEANFILES
+	* state/image.json: updated
+
 Tue Apr 15 05:43:10 2025  Rob Lauer  <rlauer6@comcast.net>
 
 	[1.0.0 - Rebooted from blog-api]:

@@ -9,11 +9,9 @@ Data::Dumper 0
 Data::UUID 0
 English 0
 File::Path 0
-File::Slurp
 JSON 0
 Module::Load 0
 Pod::Markdown
 Readonly 0
 Tie::Hash 0
-URI::Escape 0
 URI::Escape 0

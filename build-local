@@ -14,7 +14,7 @@
 # database hostname to be the same as your API's name...ymmv
 ########################################################################
 
-API_NAME=example-api
+API_NAME=bedrock-api
 MYSQL_HOST=${API_NAME}_db_1
 MYSQL_USER=fred
 MYSQL_DATABASE=example
