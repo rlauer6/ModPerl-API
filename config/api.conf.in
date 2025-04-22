@@ -5,7 +5,7 @@ PerlPassENV API_KEY
 <LocationMatch "^@base_url@/?">
 
     SetHandler perl-script 
-    PerlResponseHandler @handler@
+    PerlResponseHandler Bedrock::Apache::API::Handler
 
     PerlSetEnv CONFIG_PATH /var/www/bedrock/config
     PerlSetEnv API_NAME @api_name@

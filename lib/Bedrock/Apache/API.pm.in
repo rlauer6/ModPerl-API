@@ -253,7 +253,7 @@ sub dispatch_request {
   $api = "api_$api";
 
   if ( !$self->can($api) ) {
-    $self->log->error->("$api not implemented!");
+    $r->log->error->("$api not implemented!");
     return Apache2::Const::SERVER_ERROR;
   }
 

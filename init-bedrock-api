@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# -*- mode: sh; -*-
+
+set -euo pipefail
+IFS=$'\n\t'
+
+ARCHIVE="https://github.com/rlauer6/ModPerl-API/archive/refs/heads/master.tar.gz"
+
+mkdir -p ModPerl-API
+curl -L "$ARCHIVE" | tar -xz -C ModPerl-API --strip-components=1
+
+for a in $(cat ModPerl-API/INSTALL-FILES); do
+  test -d $(dirname $a) || mkdir -p $(dirname $a);
+  cp "$(pwd)/ModPerl-API/$a" "$(pwd)/$a"
+  rm "$(pwd)/ModPerl-API/$a"
+  ln -sf "$(pwd)/$a" "$(pwd)/ModPerl-API/$a"
+done

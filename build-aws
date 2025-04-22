@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #-*- mode: sh; -*-
 # configure an ECS HTTP API
-#
 
 ########################################################################
 get_group_id() {
@@ -25,24 +24,55 @@ get_hosted_zone() {
 
 }
 
-API_NAME=example-api
-DOMAIN=treasurersbriefcase.com
+./bootstrap
+
+
+API_NAME=bedrock-api
+
+# customize these based on your infrastructure
+DOMAIN=example.com
+
+# profile used for building resources in the target enviroment
 AWS_PROFILE=sandbox
-AWS_ROUTE53_PROFILE=prod
+
+# subnet for the target environment - use the get_subnet_id function with a tag 'Name'
 SUBNET=$(get_subnet_id 'Private-1')
+
+# security group for MySQL access - use get_group_id with a tag 'Name'
 MYSQL_SECURITY_GROUP=$(get_group_id mysql-security-group);
+
+# security group for the HTTP service
 SECURITY_GROUP=$(get_group_id 'internal web server')
+
+# if --enable-route53
+# optional profile for updating Route53 when using a custom domain name for your API
+AWS_ROUTE53_PROFILE=prod
+
+# optional hosted zone id in Route53 where the domain name will be added
 HOSTED_ZONE_ID=$(get_hosted_zone)
 HOSTED_ZONE_ID=$(basename $HOSTED_ZONE_ID)
 
-AWS_ROUTE53_PROFILE=prod
+# Fargate cluster name
 CLUSTER_NAME=fargate-cluster
+
+# domain name for your service
 HOST=sandbox-api.$DOMAIN
+
+# if --enable-alb
+# optional name of the ALB that your service will be attached to
 ALB_NAME=internal
+
+# if --enable-database (default)
+MYSQL_USER=fred
+MYSQL_DATABASE=example
+
+# you should pass this in like this: MYSQL_PASSWORD
+MYSQL_PASSWORD=
 
 ./configure \
   --with-mysql-host=mysql.local \
-  --with-mysql-user=fred \
+  --with-mysql-user=$MYSQL_USER \
+  --with-mysql-password=$MYSQL_PASSWORD \
   --with-mysql-database=example \
   --with-aws-profile=$AWS_PROFILE \
   --with-aws-route53-profile=$AWS_ROUTE53_PROFILE \

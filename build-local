@@ -3,10 +3,11 @@
 ########################################################################
 # configure for local Docker development
 ########################################################################
-#   DBI_PASS=password ./build-local 
+#   MYSQL_PASSWORD=password ./build-local 
 #   cd docker
 #   docker-compose up
 
+./bootstrap
 
 ########################################################################
 # Note: The MySQL hostname locally is taken from
@@ -20,7 +21,7 @@ MYSQL_USER=fred
 MYSQL_DATABASE=example
 
 # DOMAIN is only use to set cross-site headers
-DOMAIN=treasurersbriefcase.com
+DOMAIN=example.com
 
 ./configure \
   --with-mysql-host=$MYSQL_HOST \
@@ -28,7 +29,7 @@ DOMAIN=treasurersbriefcase.com
   --with-mysql-database=$MYSQL_DATABASE \
   --with-api-name=$API_NAME \
   --with-domain=$DOMAIN \
-  --with-mysql-password="$DBI_PASS"
+  --with-mysql-password="$MYSQL_PASSWORD"
 
-test -z "$DBI_PASS" && echo -e "\nYou probably forgot to set a MySQL password?\n\nDBI_PASS=foo ./build-local"
+test -z "$MYSQL_PASSWORD" && echo -e "\nYou probably forgot to set a MySQL password?\n\nDBI_PASS=foo ./build-local"
 
